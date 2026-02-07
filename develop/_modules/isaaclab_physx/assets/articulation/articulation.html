@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 05, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 07, 2026"/>
   </head>
   
   
@@ -627,6 +627,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -2843,65 +2844,13 @@
 <span class="sd">    Deprecated methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Articulation.write_joint_friction_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.Articulation.write_joint_friction_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_joint_friction_to_sim</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">joint_friction</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">joint_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write joint friction coefficients into the simulation.</span>
-
-<span class="sd">        .. deprecated:: 2.1.0</span>
-<span class="sd">            Please use :meth:`write_joint_friction_coefficient_to_sim` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;The function &#39;write_joint_friction_to_sim&#39; will be deprecated in a future release. Please&quot;</span>
-            <span class="s2">&quot; use &#39;write_joint_friction_coefficient_to_sim&#39; instead.&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_joint_friction_coefficient_to_sim</span><span class="p">(</span><span class="n">joint_friction</span><span class="p">,</span> <span class="n">joint_ids</span><span class="o">=</span><span class="n">joint_ids</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Articulation.write_joint_limits_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.Articulation.write_joint_limits_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_joint_limits_to_sim</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">limits</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">joint_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">warn_limit_violation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write joint limits into the simulation.</span>
-
-<span class="sd">        .. deprecated:: 2.1.0</span>
-<span class="sd">            Please use :meth:`write_joint_position_limit_to_sim` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;The function &#39;write_joint_limits_to_sim&#39; will be deprecated in a future release. Please&quot;</span>
-            <span class="s2">&quot; use &#39;write_joint_position_limit_to_sim&#39; instead.&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_joint_position_limit_to_sim</span><span class="p">(</span>
-            <span class="n">limits</span><span class="p">,</span> <span class="n">joint_ids</span><span class="o">=</span><span class="n">joint_ids</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">warn_limit_violation</span><span class="o">=</span><span class="n">warn_limit_violation</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Articulation.set_fixed_tendon_limit"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.Articulation.set_fixed_tendon_limit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_fixed_tendon_limit</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">limit</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-        <span class="n">fixed_tendon_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set fixed tendon position limits into internal buffers.</span>
-
-<span class="sd">        .. deprecated:: 2.1.0</span>
-<span class="sd">            Please use :meth:`set_fixed_tendon_position_limit` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;The function &#39;set_fixed_tendon_limit&#39; will be deprecated in a future release. Please&quot;</span>
-            <span class="s2">&quot; use &#39;set_fixed_tendon_position_limit&#39; instead.&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_fixed_tendon_position_limit</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="n">fixed_tendon_ids</span><span class="o">=</span><span class="n">fixed_tendon_ids</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">)</span></div>
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">root_physx_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">physx</span><span class="o">.</span><span class="n">RigidBodyView</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deprecated property. Please use :attr:`root_view` instead.&quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;The `root_physx_view` property will be deprecated in a future release. Please use `root_view` instead.&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The `root_physx_view` property will be deprecated in a future release. Please use `root_view` instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_view</span></div>
 </pre></div>
@@ -2951,7 +2900,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 05, 2026.
+  Last updated on Feb 07, 2026.
   <br/>
 </p>
   </div>

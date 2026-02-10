@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 09, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 10, 2026"/>
   </head>
   
   
@@ -333,6 +333,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../testing/index.html">Testing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../testing/mock_interfaces.html">Mock Interfaces for Unit Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing/micro_benchmarks.html">Micro-Benchmarks for Performance Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testing/benchmarks.html">Benchmarking Framework</a></li>
 </ul>
 </details></li>
 </ul>
@@ -449,7 +450,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_contrib/isaaclab_contrib.sensors.html">isaaclab_contrib.sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_tasks/isaaclab_tasks.utils.html">isaaclab_tasks.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab.assets.html">isaaclab_physx.assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
 </ul>
 </details></li>
 </ul>
@@ -825,7 +826,7 @@ and <code class="xref py py-class docutils literal notranslate"><span class="pre
 <h2><code class="docutils literal notranslate"><span class="pre">root_physx_view</span></code> Deprecation<a class="headerlink" href="#root-physx-view-deprecation" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">root_physx_view</span></code> property has been deprecated on <a class="reference internal" href="../api/lab/isaaclab.assets.html#isaaclab.assets.Articulation" title="isaaclab.assets.Articulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Articulation</span></code></a>,
 <a class="reference internal" href="../api/lab/isaaclab.assets.html#isaaclab.assets.RigidObject" title="isaaclab.assets.RigidObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObject</span></code></a>, <a class="reference internal" href="../api/lab/isaaclab.assets.html#isaaclab.assets.RigidObjectCollection" title="isaaclab.assets.RigidObjectCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollection</span></code></a>, and
-<a class="reference internal" href="../api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.DeformableObject" title="isaaclab_physx.assets.DeformableObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeformableObject</span></code></a> in favor of the backend-agnostic <code class="docutils literal notranslate"><span class="pre">root_view</span></code> property.</p>
+<a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.DeformableObject" title="isaaclab_physx.assets.DeformableObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeformableObject</span></code></a> in favor of the backend-agnostic <code class="docutils literal notranslate"><span class="pre">root_view</span></code> property.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Deprecated (2.x)</p></th>
@@ -857,8 +858,8 @@ The <code class="docutils literal notranslate"><span class="pre">root_physx_view
 </section>
 <section id="rigidobjectcollection-api-renaming">
 <h2>RigidObjectCollection API Renaming<a class="headerlink" href="#rigidobjectcollection-api-renaming" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection" title="isaaclab_physx.assets.RigidObjectCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollection</span></code></a> and
-<a class="reference internal" href="../api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollectionData" title="isaaclab_physx.assets.RigidObjectCollectionData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollectionData</span></code></a> classes have undergone an API rename
+<p>The <a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection" title="isaaclab_physx.assets.RigidObjectCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollection</span></code></a> and
+<a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollectionData" title="isaaclab_physx.assets.RigidObjectCollectionData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollectionData</span></code></a> classes have undergone an API rename
 to provide consistency with other asset classes. The <code class="docutils literal notranslate"><span class="pre">object_*</span></code> naming convention has been
 deprecated in favor of <code class="docutils literal notranslate"><span class="pre">body_*</span></code>.</p>
 <section id="method-renames">
@@ -905,7 +906,7 @@ future release:</p>
 </section>
 <section id="property-renames-data-class">
 <h3>Property Renames (Data Class)<a class="headerlink" href="#property-renames-data-class" title="Permalink to this heading">#</a></h3>
-<p>The following properties on <a class="reference internal" href="../api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollectionData" title="isaaclab_physx.assets.RigidObjectCollectionData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollectionData</span></code></a> have been
+<p>The following properties on <a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollectionData" title="isaaclab_physx.assets.RigidObjectCollectionData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidObjectCollectionData</span></code></a> have been
 renamed. The old properties are deprecated and will be removed in a future release:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -1441,7 +1442,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 09, 2026.
+  Last updated on Feb 10, 2026.
   <br/>
 </p>
   </div>

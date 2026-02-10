@@ -59,12 +59,12 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Core Concepts" href="../overview/core-concepts/index.html" />
+    <link rel="next" title="Benchmarking Framework" href="benchmarks.html" />
     <link rel="prev" title="Mock Interfaces for Unit Testing" href="mock_interfaces.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 09, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 10, 2026"/>
   </head>
   
   
@@ -333,6 +333,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Testing</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mock_interfaces.html">Mock Interfaces for Unit Testing</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Micro-Benchmarks for Performance Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks.html">Benchmarking Framework</a></li>
 </ul>
 </details></li>
 </ul>
@@ -449,7 +450,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_contrib/isaaclab_contrib.sensors.html">isaaclab_contrib.sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_tasks/isaaclab_tasks.utils.html">isaaclab_tasks.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab.assets.html">isaaclab_physx.assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
 </ul>
 </details></li>
 </ul>
@@ -729,6 +730,12 @@
 <span id="testing-micro-benchmarks"></span><h1>Micro-Benchmarks for Performance Testing<a class="headerlink" href="#micro-benchmarks-for-performance-testing" title="Permalink to this heading">#</a></h1>
 <p>Isaac Lab provides micro-benchmarking tools to measure the performance of asset
 setter/writer methods and data property accessors without requiring Isaac Sim.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For full-simulation benchmarks (environment stepping, RL training), see
+<a class="reference internal" href="benchmarks.html#testing-benchmarks"><span class="std std-ref">Benchmarking Framework</span></a>. This page covers method-level micro-benchmarks
+that use mock interfaces.</p>
+</div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p>The benchmarks use <strong>mock interfaces</strong> to simulate PhysX views, allowing performance
@@ -970,10 +977,17 @@ write_root_state_to_sim               132.02        65.44        2.02x
 └─────────────────────┘     └──────────────────────┘
          │
          v
-┌─────────────────────┐
-│   Benchmark         │
-│   Framework         │
-└─────────────────────┘
+┌───────────────────────────┐
+│   MethodBenchmarkRunner   │
+│   (extends BaseIsaacLab-  │
+│    Benchmark)             │
+└───────────────────────────┘
+         │
+         v
+┌───────────────────────────┐
+│   Output Backends         │
+│   (json, osmo, omniperf)  │
+└───────────────────────────┘
 </pre></div>
 </div>
 <section id="key-components">
@@ -985,12 +999,13 @@ write_root_state_to_sim               132.02        65.44        2.02x
 <li><p><code class="docutils literal notranslate"><span class="pre">MockRigidBodyView</span></code> - Mimics PhysX RigidBodyView</p></li>
 </ul>
 </li>
-<li><p><strong>Benchmark Utilities</strong> (<code class="docutils literal notranslate"><span class="pre">isaaclab/test/benchmark/</span></code>)</p>
+<li><p><strong>Benchmark Framework</strong> (<code class="docutils literal notranslate"><span class="pre">isaaclab/test/benchmark/</span></code>)</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">BenchmarkConfig</span></code> - Configuration dataclass</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MethodBenchmark</span></code> - Benchmark definition</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">benchmark_method()</span></code> - Core timing function</p></li>
-<li><p>Export utilities for JSON/CSV</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodBenchmarkRunner</span></code> - Runner extending
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseIsaacLabBenchmark</span></code> for method-level benchmarks</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodBenchmarkRunnerConfig</span></code> - Configuration dataclass</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodBenchmarkDefinition</span></code> - Benchmark definition</p></li>
+<li><p>Multiple output backends (JSON, Osmo, OmniPerf)</p></li>
 </ul>
 </li>
 <li><p><strong>Module Mocking</strong></p>
@@ -1007,23 +1022,27 @@ to allow the asset classes to be instantiated without simulation.</p>
 <ol class="arabic simple">
 <li><p>Create input generator functions:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">gen_my_method_torch_list</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">BenchmarkConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.test.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">MethodBenchmarkRunnerConfig</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_my_method_torch_list</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">MethodBenchmarkRunnerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;param1&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_instances</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
         <span class="s2">&quot;env_ids&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_instances</span><span class="p">)),</span>
     <span class="p">}</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">gen_my_method_torch_tensor</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">BenchmarkConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_my_method_torch_tensor</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">MethodBenchmarkRunnerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;param1&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_instances</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
-        <span class="s2">&quot;env_ids&quot;</span><span class="p">:</span> <span class="n">make_tensor_env_ids</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_instances</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+        <span class="s2">&quot;env_ids&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_instances</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
     <span class="p">}</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Add to the <code class="docutils literal notranslate"><span class="pre">BENCHMARKS</span></code> list:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MethodBenchmark</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.test.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">MethodBenchmarkDefinition</span>
+
+<span class="n">MethodBenchmarkDefinition</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_method&quot;</span><span class="p">,</span>
     <span class="n">method_name</span><span class="o">=</span><span class="s2">&quot;my_method&quot;</span><span class="p">,</span>
     <span class="n">input_generators</span><span class="o">=</span><span class="p">{</span>
@@ -1110,11 +1129,11 @@ before timing the property access.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../overview/core-concepts/index.html"
+       href="benchmarks.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Core Concepts</p>
+        <p class="prev-next-title">Benchmarking Framework</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1203,7 +1222,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 09, 2026.
+  Last updated on Feb 10, 2026.
   <br/>
 </p>
   </div>

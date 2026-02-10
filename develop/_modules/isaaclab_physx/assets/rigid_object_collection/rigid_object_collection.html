@@ -61,7 +61,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 09, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 10, 2026"/>
   </head>
   
   
@@ -332,6 +332,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../source/testing/index.html">Testing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../source/testing/mock_interfaces.html">Mock Interfaces for Unit Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../source/testing/micro_benchmarks.html">Micro-Benchmarks for Performance Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../source/testing/benchmarks.html">Benchmarking Framework</a></li>
 </ul>
 </details></li>
 </ul>
@@ -448,7 +449,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../source/api/lab_contrib/isaaclab_contrib.sensors.html">isaaclab_contrib.sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../source/api/lab_tasks/isaaclab_tasks.utils.html">isaaclab_tasks.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../source/api/lab_physx/isaaclab.assets.html">isaaclab_physx.assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
 </ul>
 </details></li>
 </ul>
@@ -651,7 +652,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="RigidObjectCollection"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RigidObjectCollection</span><span class="p">(</span><span class="n">BaseRigidObjectCollection</span><span class="p">):</span>
+<div class="viewcode-block" id="RigidObjectCollection"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RigidObjectCollection</span><span class="p">(</span><span class="n">BaseRigidObjectCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A rigid object collection class.</span>
 
 <span class="sd">    This class represents a collection of rigid objects in the simulation, where the state of the</span>
@@ -679,7 +680,7 @@
     <span class="n">__backend_name__</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;physx&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the backend for the rigid object.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.__init__"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">RigidObjectCollectionCfg</span><span class="p">):</span>
+<div class="viewcode-block" id="RigidObjectCollection.__init__"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">RigidObjectCollectionCfg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the rigid object.</span>
 
 <span class="sd">        Args:</span>
@@ -766,7 +767,7 @@
 <span class="sd">    Operations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.reset"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_ids</span><span class="p">:</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RigidObjectCollection.reset"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_ids</span><span class="p">:</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resets all internal buffers of selected environments and objects.</span>
 
 <span class="sd">        Args:</span>
@@ -782,7 +783,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_instantaneous_wrench_composer</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">env_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_permanent_wrench_composer</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">env_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_data_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_data_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_data_to_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_data_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_data_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_data_to_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write external wrench to the simulation.</span>
 
 <span class="sd">        .. note::</span>
@@ -818,7 +819,7 @@
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_instantaneous_wrench_composer</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.update"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RigidObjectCollection.update"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the simulation data.</span>
 
 <span class="sd">        Args:</span>
@@ -830,7 +831,7 @@
 <span class="sd">    Operations - Finders.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.find_bodies"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.find_bodies">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_bodies</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.find_bodies"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.find_bodies">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_bodies</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name_keys</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">preserve_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find bodies in the rigid body collection based on the name keys.</span>
@@ -852,7 +853,7 @@
 <span class="sd">    Operations - Write to simulation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_state_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_state_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -872,7 +873,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_link_pose_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_com_velocity_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">:],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_com_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_state_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_com_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_state_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -891,7 +892,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_com_pose_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_com_velocity_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">:],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_link_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_state_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_link_state_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_state_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_state_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -910,7 +911,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_link_pose_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_link_velocity_to_sim</span><span class="p">(</span><span class="n">body_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">:],</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_pose_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_pose_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_poses</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -927,7 +928,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_link_pose_to_sim</span><span class="p">(</span><span class="n">body_poses</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_link_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_pose_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_link_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_pose_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_poses</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -983,7 +984,7 @@
         <span class="n">view_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_body_ids_to_view_ids</span><span class="p">(</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_view</span><span class="o">.</span><span class="n">set_transforms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reshape_data_to_view</span><span class="p">(</span><span class="n">poses_xyzw</span><span class="p">),</span> <span class="n">indices</span><span class="o">=</span><span class="n">view_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_com_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_pose_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_com_pose_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_pose_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_pose_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_poses</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1034,7 +1035,7 @@
         <span class="n">body_link_pose</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">body_link_pos</span><span class="p">,</span> <span class="n">body_link_quat</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_link_pose_to_sim</span><span class="p">(</span><span class="n">body_link_pose</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_velocity_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_velocity_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_velocities</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1052,7 +1053,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_body_com_velocity_to_sim</span><span class="p">(</span><span class="n">body_velocities</span><span class="p">,</span> <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="o">=</span><span class="n">body_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_com_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_velocity_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_com_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_com_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_com_velocity_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_velocities</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1100,7 +1101,7 @@
         <span class="n">view_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_body_ids_to_view_ids</span><span class="p">(</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">body_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_view</span><span class="o">.</span><span class="n">set_velocities</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reshape_data_to_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">body_com_vel_w</span><span class="p">),</span> <span class="n">indices</span><span class="o">=</span><span class="n">view_ids</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.write_body_link_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_velocity_to_sim</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.write_body_link_velocity_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.write_body_link_velocity_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_body_link_velocity_to_sim</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body_velocities</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">env_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1152,7 +1153,7 @@
 <span class="sd">    Operations - Setters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.set_masses"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_masses">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_masses</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.set_masses"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_masses">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_masses</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">masses</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">body_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1187,7 +1188,7 @@
         <span class="c1"># set into simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_view</span><span class="o">.</span><span class="n">set_masses</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_body_mass</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">indices</span><span class="o">=</span><span class="n">view_ids</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.set_coms"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_coms">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_coms</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.set_coms"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_coms">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_coms</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">coms</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">body_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1228,7 +1229,7 @@
         <span class="c1"># invalidate the cached buffer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_body_com_pose_b</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.set_inertias"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_inertias">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_inertias</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.set_inertias"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_inertias">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_inertias</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">inertias</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">body_ids</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1264,7 +1265,7 @@
         <span class="c1"># set into simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_view</span><span class="o">.</span><span class="n">set_inertias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_body_inertia</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">indices</span><span class="o">=</span><span class="n">view_ids</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.set_external_force_and_torque"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_external_force_and_torque">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_external_force_and_torque</span><span class="p">(</span>
+<div class="viewcode-block" id="RigidObjectCollection.set_external_force_and_torque"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.set_external_force_and_torque">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_external_force_and_torque</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">forces</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">torques</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
@@ -1358,7 +1359,7 @@
 <span class="sd">    Helper functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RigidObjectCollection.reshape_view_to_data"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.reshape_view_to_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reshape_view_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="RigidObjectCollection.reshape_view_to_data"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.reshape_view_to_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reshape_view_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reshapes and arranges the data coming from the :attr:`root_view` to</span>
 <span class="sd">        (num_instances, num_bodies, data_dim).</span>
 
@@ -1370,7 +1371,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk -&gt; jik&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_bodies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_instances</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="RigidObjectCollection.reshape_data_to_view"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab.assets.html#isaaclab_physx.assets.RigidObjectCollection.reshape_data_to_view">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reshape_data_to_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="RigidObjectCollection.reshape_data_to_view"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.RigidObjectCollection.reshape_data_to_view">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reshape_data_to_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reshapes and arranges the data to the be consistent with data from the :attr:`root_view`.</span>
 
 <span class="sd">        Args:</span>
@@ -1612,7 +1613,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 09, 2026.
+  Last updated on Feb 10, 2026.
   <br/>
 </p>
   </div>

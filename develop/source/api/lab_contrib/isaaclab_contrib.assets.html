@@ -66,7 +66,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 09, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 10, 2026"/>
   </head>
   
   
@@ -335,6 +335,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../testing/index.html">Testing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../testing/mock_interfaces.html">Mock Interfaces for Unit Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../testing/micro_benchmarks.html">Micro-Benchmarks for Performance Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing/benchmarks.html">Benchmarking Framework</a></li>
 </ul>
 </details></li>
 </ul>
@@ -451,7 +452,7 @@
 <li class="toctree-l2"><a class="reference internal" href="isaaclab_contrib.sensors.html">isaaclab_contrib.sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lab_tasks/isaaclab_tasks.utils.html">isaaclab_tasks.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab.assets.html">isaaclab_physx.assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
 </ul>
 </details></li>
 </ul>
@@ -966,7 +967,7 @@ contributed by the community to extend the capabilities of Isaac Lab.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="isaaclab_contrib.assets.Multirotor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">isaaclab_contrib.assets.</span></span><span class="sig-name descname"><span class="pre">Multirotor</span></span><a class="reference internal" href="../../../_modules/isaaclab_contrib/assets/multirotor/multirotor.html#Multirotor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#isaaclab_contrib.assets.Multirotor" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../lab_physx/isaaclab.assets.html#isaaclab_physx.assets.Articulation" title="isaaclab_physx.assets.articulation.articulation.Articulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Articulation</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.Articulation" title="isaaclab_physx.assets.articulation.articulation.Articulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Articulation</span></code></a></p>
 <p>A multirotor articulation asset class.</p>
 <p>This class extends the base <a class="reference internal" href="../lab/isaaclab.assets.html#isaaclab.assets.Articulation" title="isaaclab.assets.Articulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Articulation</span></code></a> class to support multirotor vehicles
 (such as quadcopters, hexacopters, and octocopters) with thruster actuators that apply forces
@@ -1438,7 +1439,7 @@ control rather than joint-based control.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="isaaclab_contrib.assets.Multirotor.data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab.assets.html#isaaclab_physx.assets.ArticulationData" title="isaaclab_physx.assets.articulation.articulation_data.ArticulationData"><span class="pre">ArticulationData</span></a></em><a class="headerlink" href="#isaaclab_contrib.assets.Multirotor.data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.ArticulationData" title="isaaclab_physx.assets.articulation.articulation_data.ArticulationData"><span class="pre">ArticulationData</span></a></em><a class="headerlink" href="#isaaclab_contrib.assets.Multirotor.data" title="Permalink to this definition">#</a></dt>
 <dd><p>Data related to the asset.</p>
 </dd></dl>
 
@@ -2809,7 +2810,7 @@ during initialization.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="isaaclab_contrib.assets.MultirotorData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">isaaclab_contrib.assets.</span></span><span class="sig-name descname"><span class="pre">MultirotorData</span></span><a class="reference internal" href="../../../_modules/isaaclab_contrib/assets/multirotor/multirotor_data.html#MultirotorData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#isaaclab_contrib.assets.MultirotorData" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../lab_physx/isaaclab.assets.html#isaaclab_physx.assets.ArticulationData" title="isaaclab_physx.assets.articulation.articulation_data.ArticulationData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArticulationData</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.ArticulationData" title="isaaclab_physx.assets.articulation.articulation_data.ArticulationData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArticulationData</span></code></a></p>
 <p>Data container for a multirotor articulation.</p>
 <p>This class extends the base <a class="reference internal" href="../lab/isaaclab.assets.html#isaaclab.assets.ArticulationData" title="isaaclab.assets.ArticulationData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArticulationData</span></code></a> container to include
 multirotor-specific data such as thruster states, thrust targets, and computed forces.
@@ -4585,7 +4586,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 09, 2026.
+  Last updated on Feb 10, 2026.
   <br/>
 </p>
   </div>

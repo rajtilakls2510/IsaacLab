@@ -64,7 +64,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2.3.2" />
-    <meta name="docbuild:last-update" content="Feb 09, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 10, 2026"/>
   </head>
   
   
@@ -333,6 +333,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../testing/index.html">Testing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../testing/mock_interfaces.html">Mock Interfaces for Unit Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../testing/micro_benchmarks.html">Micro-Benchmarks for Performance Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing/benchmarks.html">Benchmarking Framework</a></li>
 </ul>
 </details></li>
 </ul>
@@ -449,7 +450,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../lab_contrib/isaaclab_contrib.sensors.html">isaaclab_contrib.sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lab_tasks/isaaclab_tasks.utils.html">isaaclab_tasks.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab.assets.html">isaaclab_physx.assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html">isaaclab_physx.assets</a></li>
 </ul>
 </details></li>
 </ul>
@@ -1019,7 +1020,7 @@ handled differently from other miscellaneous entities.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="isaaclab.scene.InteractiveScene.deformable_objects">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deformable_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab.assets.html#isaaclab_physx.assets.DeformableObject" title="isaaclab_physx.assets.deformable_object.deformable_object.DeformableObject"><span class="pre">isaaclab_physx.assets.deformable_object.deformable_object.DeformableObject</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.scene.InteractiveScene.deformable_objects" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deformable_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.DeformableObject" title="isaaclab_physx.assets.deformable_object.deformable_object.DeformableObject"><span class="pre">isaaclab_physx.assets.deformable_object.deformable_object.DeformableObject</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.scene.InteractiveScene.deformable_objects" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary of deformable objects in the scene.</p>
 </dd></dl>
 
@@ -1043,7 +1044,7 @@ handled differently from other miscellaneous entities.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="isaaclab.scene.InteractiveScene.surface_grippers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">surface_grippers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab.assets.html#isaaclab_physx.assets.SurfaceGripper" title="isaaclab_physx.assets.surface_gripper.surface_gripper.SurfaceGripper"><span class="pre">isaaclab_physx.assets.surface_gripper.surface_gripper.SurfaceGripper</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.scene.InteractiveScene.surface_grippers" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">surface_grippers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper" title="isaaclab_physx.assets.surface_gripper.surface_gripper.SurfaceGripper"><span class="pre">isaaclab_physx.assets.surface_gripper.surface_gripper.SurfaceGripper</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.scene.InteractiveScene.surface_grippers" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary of the surface grippers in the scene.</p>
 </dd></dl>
 
@@ -1450,7 +1451,7 @@ By The Isaac Lab Project Developers.
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 09, 2026.
+  Last updated on Feb 10, 2026.
   <br/>
 </p>
   </div>

@@ -704,7 +704,7 @@
         <span class="c1"># -- set the framerate of the gym video recorder wrapper so that the playback speed of the</span>
         <span class="c1">#    produced video matches the simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;render_fps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_dt</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s2">&quot;/isaaclab/render/rtx_sensors&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO]: Completed setting up the environment...&quot;</span><span class="p">)</span></div>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -794,8 +794,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recorder_manager</span><span class="o">.</span><span class="n">record_pre_step</span><span class="p">()</span>
 
         <span class="c1"># check if we need to do rendering within the physics loop</span>
-        <span class="c1"># note: checked here once to avoid multiple checks within the loop</span>
-        <span class="n">is_rendering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span>
+        <span class="c1"># note: uses cached property to avoid settings lookup every step</span>
+        <span class="n">is_rendering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">is_rendering</span>
 
         <span class="c1"># perform physics stepping</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">decimation</span><span class="p">):</span>
@@ -840,7 +840,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_reset_idx</span><span class="p">(</span><span class="n">reset_env_ids</span><span class="p">)</span>
 
             <span class="c1"># if sensors are added to the scene, make sure we render to reflect changes in reset</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
@@ -882,19 +882,17 @@
 <span class="sd">            NotImplementedError: If an unsupported rendering mode is specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># run a rendering step of the simulator</span>
-        <span class="c1"># if we have rtx sensors, we do not need to render again sin</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="c1"># if we have rtx sensors, we do not need to render again since step already rendered</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
         <span class="c1"># decide the rendering mode</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_mode</span> <span class="o">==</span> <span class="s2">&quot;human&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_mode</span> <span class="o">==</span> <span class="s2">&quot;rgb_array&quot;</span><span class="p">:</span>
             <span class="c1"># check that if any render could have happened</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="o">.</span><span class="n">PARTIAL_RENDERING</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_offscreen_render</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Cannot render &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">render_mode</span><span class="si">}</span><span class="s2">&#39; when the simulation render mode is&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render_mode</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Please set the simulation render mode to:&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="o">.</span><span class="n">PARTIAL_RENDERING</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; or &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="o">.</span><span class="n">FULL_RENDERING</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot render &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">render_mode</span><span class="si">}</span><span class="s2">&#39; - no GUI and offscreen rendering not enabled.&quot;</span>
                     <span class="s2">&quot; If running headless, make sure --enable_cameras is set.&quot;</span>
                 <span class="p">)</span>
             <span class="c1"># create the annotator if it does not exist</span>

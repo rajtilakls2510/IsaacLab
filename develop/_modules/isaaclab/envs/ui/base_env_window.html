@@ -742,18 +742,8 @@
             <span class="c1"># create stack for controls</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;sim_vstack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;sim_vstack&quot;</span><span class="p">]:</span>
-                <span class="c1"># create rendering mode dropdown</span>
-                <span class="n">render_mode_cfg</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Rendering Mode&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;dropdown&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;default_val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span> <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Select a rendering mode</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
-                    <span class="s2">&quot;on_clicked_fn&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">value</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">set_render_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="p">[</span><span class="n">value</span><span class="p">]),</span>
-                <span class="p">}</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;render_dropdown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">isaacsim</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">ui_utils</span><span class="o">.</span><span class="n">dropdown_builder</span><span class="p">(</span>
-                    <span class="o">**</span><span class="n">render_mode_cfg</span>
-                <span class="p">)</span>
+                <span class="c1"># create rendering mode dropdown if visualizer supports it</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_build_render_mode_dropdown</span><span class="p">()</span>
 
                 <span class="c1"># create animation recording box</span>
                 <span class="n">record_animate_cfg</span> <span class="o">=</span> <span class="p">{</span>
@@ -768,7 +758,40 @@
                     <span class="o">**</span><span class="n">record_animate_cfg</span>
                 <span class="p">)</span>
                 <span class="c1"># disable the button if fabric is not enabled</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;record_animation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">is_fabric_enabled</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;record_animation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+                    <span class="s2">&quot;/isaaclab/fabric_enabled&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_render_mode_dropdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build rendering mode dropdown if a visualizer supports it.&quot;&quot;&quot;</span>
+        <span class="c1"># Find first visualizer with render_mode support</span>
+        <span class="n">viz</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">RenderMode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">visualizers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;render_mode&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;set_render_mode&quot;</span><span class="p">):</span>
+                <span class="n">viz</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="c1"># Get RenderMode enum from the visualizer&#39;s module</span>
+                <span class="n">RenderMode</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">render_mode</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">viz</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">RenderMode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_render_mode_changed</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">viz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">viz</span><span class="p">,</span> <span class="s2">&quot;set_render_mode&quot;</span><span class="p">):</span>
+                <span class="n">viz</span><span class="o">.</span><span class="n">set_render_mode</span><span class="p">(</span><span class="n">RenderMode</span><span class="p">[</span><span class="n">value</span><span class="p">])</span>
+
+        <span class="n">render_mode_cfg</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Rendering Mode&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;dropdown&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default_val&quot;</span><span class="p">:</span> <span class="n">viz</span><span class="o">.</span><span class="n">render_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">RenderMode</span> <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Select a rendering mode</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="n">RenderMode</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;on_clicked_fn&quot;</span><span class="p">:</span> <span class="n">on_render_mode_changed</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_window_elements</span><span class="p">[</span><span class="s2">&quot;render_dropdown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">isaacsim</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">ui_utils</span><span class="o">.</span><span class="n">dropdown_builder</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">render_mode_cfg</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_viewer_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the viewer-related control frame for the UI.&quot;&quot;&quot;</span>

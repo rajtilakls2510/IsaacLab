@@ -853,13 +853,13 @@ with the simulator.</p>
 </section>
 <section id="running-the-simulation">
 <h3>Running the simulation<a class="headerlink" href="#running-the-simulation" title="Permalink to this heading">#</a></h3>
-<p>The first thing, after setting up the simulation scene, is to call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.reset()</span></code>
+<p>The first thing, after setting up the simulation scene, is to call the <a class="reference internal" href="../../api/lab/isaaclab.sim.html#isaaclab.sim.SimulationContext.reset" title="isaaclab.sim.SimulationContext.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.reset()</span></code></a>
 method. This method plays the timeline and initializes the physics handles in the simulator. It must always
 be called the first time before stepping the simulator. Otherwise, the simulation handles are not initialized
 properly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.reset()</span></code> is different from <code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.play()</span></code> method as the latter
+<p><a class="reference internal" href="../../api/lab/isaaclab.sim.html#isaaclab.sim.SimulationContext.reset" title="isaaclab.sim.SimulationContext.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.reset()</span></code></a> is different from <a class="reference internal" href="../../api/lab/isaaclab.sim.html#isaaclab.sim.SimulationContext.play" title="isaaclab.sim.SimulationContext.play"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sim.SimulationContext.play()</span></code></a> method as the latter
 only plays the timeline and does not initializes the physics handles.</p>
 </div>
 <p>After playing the simulation timeline, we set up a simple simulation loop where the simulator is stepped repeatedly

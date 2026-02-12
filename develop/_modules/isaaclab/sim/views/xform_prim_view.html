@@ -1702,9 +1702,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fabric_initialized</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_fabric</span><span class="p">()</span>
 
-        <span class="c1"># Ensure authored USD transforms are flushed before reading into Fabric.</span>
-        <span class="n">sim_utils</span><span class="o">.</span><span class="n">update_stage</span><span class="p">()</span>
-
         <span class="c1"># Read authoritative transforms from USD and write once into Fabric.</span>
         <span class="n">positions_usd</span><span class="p">,</span> <span class="n">orientations_usd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_world_poses_usd</span><span class="p">()</span>
         <span class="n">scales_usd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scales_usd</span><span class="p">()</span>

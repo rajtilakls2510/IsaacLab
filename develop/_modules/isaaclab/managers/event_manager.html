@@ -810,6 +810,13 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Event mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; is not defined. Skipping event.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
+        <span class="c1"># ensure class-based terms are resolved before applying</span>
+        <span class="c1"># the timeline PLAY callback may not have fired yet, so we resolve synchronously</span>
+        <span class="c1"># note: skip for &quot;prestartup&quot; mode as those terms are handled in _prepare_terms</span>
+        <span class="c1"># and scene entities don&#39;t exist yet</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;prestartup&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_scene_entities_resolved</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_terms_callback</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
         <span class="c1"># check if mode is interval and dt is not provided</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;interval&quot;</span> <span class="ow">and</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Event mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; requires the time-step of the environment.&quot;</span><span class="p">)</span>

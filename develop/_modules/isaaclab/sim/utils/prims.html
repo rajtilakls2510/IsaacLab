@@ -799,7 +799,6 @@
         <span class="c1"># this means that user provided pose in the world frame</span>
         <span class="n">translation</span><span class="p">,</span> <span class="n">orientation</span> <span class="o">=</span> <span class="n">convert_world_pose_to_local</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">ref_prim</span><span class="o">=</span><span class="n">prim</span><span class="o">.</span><span class="n">GetParent</span><span class="p">())</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;translation: </span><span class="si">{</span><span class="n">translation</span><span class="si">}</span><span class="s2">, orientation: </span><span class="si">{</span><span class="n">orientation</span><span class="si">}</span><span class="s2">, scale: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># standardize the xform ops</span>
     <span class="n">standardize_xform_ops</span><span class="p">(</span><span class="n">prim</span><span class="p">,</span> <span class="n">translation</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
 

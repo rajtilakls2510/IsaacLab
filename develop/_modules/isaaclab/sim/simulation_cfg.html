@@ -628,190 +628,14 @@
 <span class="sd">configuring the environment instances, viewer settings, and simulation parameters.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>  <span class="c1"># Literal used by RenderCfg</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.physics</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicsCfg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.sim.spawners.materials.physics_materials_cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">RigidBodyMaterialCfg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">configclass</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">.spawners.materials</span><span class="w"> </span><span class="kn">import</span> <span class="n">RigidBodyMaterialCfg</span>
-
-
-<div class="viewcode-block" id="PhysxCfg"><a class="viewcode-back" href="../../../source/api/lab/isaaclab.sim.html#isaaclab.sim.PhysxCfg">[docs]</a><span class="nd">@configclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">PhysxCfg</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for PhysX solver-related parameters.</span>
-
-<span class="sd">    These parameters are used to configure the PhysX solver. For more information, see the `PhysX 5 SDK</span>
-<span class="sd">    documentation`_.</span>
-
-<span class="sd">    PhysX 5 supports GPU-accelerated physics simulation. This is enabled by default, but can be disabled</span>
-<span class="sd">    by setting the :attr:`~SimulationCfg.device` to ``cpu`` in :class:`SimulationCfg`. Unlike CPU PhysX, the GPU</span>
-<span class="sd">    simulation feature is unable to dynamically grow all the buffers. Therefore, it is necessary to provide</span>
-<span class="sd">    a reasonable estimate of the buffer sizes for GPU features. If insufficient buffer sizes are provided, the</span>
-<span class="sd">    simulation will fail with errors and lead to adverse behaviors. The buffer sizes can be adjusted through the</span>
-<span class="sd">    ``gpu_*`` parameters.</span>
-
-<span class="sd">    .. _PhysX 5 SDK documentation: https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/_api_build/classPxSceneDesc.html</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">solver_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The type of solver to use.Default is 1 (TGS).</span>
-
-<span class="sd">    Available solvers:</span>
-
-<span class="sd">    * :obj:`0`: PGS (Projective Gauss-Seidel)</span>
-<span class="sd">    * :obj:`1`: TGS (Temporal Gauss-Seidel)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">solve_articulation_contact_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Changes the ordering inside the articulation solver. Default is False.</span>
-
-<span class="sd">    PhysX employs a strict ordering for handling constraints in an articulation. The outcome of</span>
-<span class="sd">    each constraint resolution modifies the joint and associated link speeds. However, the default</span>
-<span class="sd">    ordering may not be ideal for gripping scenarios because the solver favours the constraint</span>
-<span class="sd">    types that are resolved last. This is particularly true of stiff constraint systems that are hard</span>
-<span class="sd">    to resolve without resorting to vanishingly small simulation timesteps.</span>
-
-<span class="sd">    With dynamic contact resolution being such an important part of gripping, it may make</span>
-<span class="sd">    more sense to solve dynamic contact towards the end of the solver rather than at the</span>
-<span class="sd">    beginning. This parameter modifies the default ordering to enable this change.</span>
-
-<span class="sd">    For more information, please check `here &lt;https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/guides/articulation_stability_guide.html#articulation-solver-order&gt;`__.</span>
-
-<span class="sd">    .. versionadded:: v2.3</span>
-<span class="sd">        This parameter is only available with Isaac Sim 5.1.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">min_position_iteration_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimum number of solver position iterations (rigid bodies, cloth, particles etc.). Default is 1.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        Each physics actor in Omniverse specifies its own solver iteration count. The solver takes</span>
-<span class="sd">        the number of iterations specified by the actor with the highest iteration and clamps it to</span>
-<span class="sd">        the range ``[min_position_iteration_count, max_position_iteration_count]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">max_position_iteration_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">255</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum number of solver position iterations (rigid bodies, cloth, particles etc.). Default is 255.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        Each physics actor in Omniverse specifies its own solver iteration count. The solver takes</span>
-<span class="sd">        the number of iterations specified by the actor with the highest iteration and clamps it to</span>
-<span class="sd">        the range ``[min_position_iteration_count, max_position_iteration_count]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">min_velocity_iteration_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimum number of solver velocity iterations (rigid bodies, cloth, particles etc.). Default is 0.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        Each physics actor in Omniverse specifies its own solver iteration count. The solver takes</span>
-<span class="sd">        the number of iterations specified by the actor with the highest iteration and clamps it to</span>
-<span class="sd">        the range ``[min_velocity_iteration_count, max_velocity_iteration_count]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">max_velocity_iteration_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">255</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum number of solver velocity iterations (rigid bodies, cloth, particles etc.). Default is 255.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        Each physics actor in Omniverse specifies its own solver iteration count. The solver takes</span>
-<span class="sd">        the number of iterations specified by the actor with the highest iteration and clamps it to</span>
-<span class="sd">        the range ``[min_velocity_iteration_count, max_velocity_iteration_count]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">enable_ccd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable a second broad-phase pass that makes it possible to prevent objects from tunneling through each other.</span>
-<span class="sd">    Default is False.&quot;&quot;&quot;</span>
-
-    <span class="n">enable_stabilization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable additional stabilization pass in solver. Default is False.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        We recommend setting this flag to true only when the simulation step size is large</span>
-<span class="sd">        (i.e., less than 30 Hz or more than 0.0333 seconds).</span>
-
-<span class="sd">    .. warning::</span>
-
-<span class="sd">        Enabling this flag may lead to incorrect contact forces report from the contact sensor.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">enable_external_forces_every_iteration</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable external forces every position iteration in the TGS solver. Default is False.</span>
-
-<span class="sd">    When using the TGS solver (:attr:`solver_type` is 1), this flag allows enabling external forces every solver</span>
-<span class="sd">    position iteration. This can help improve the accuracy of velocity updates. Consider enabling this flag if</span>
-<span class="sd">    the velocities generated by the simulation are noisy. Increasing the number of velocity iterations, together</span>
-<span class="sd">    with this flag, can help improve the accuracy of velocity updates.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        This flag is ignored when using the PGS solver (:attr:`solver_type` is 0).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">enable_enhanced_determinism</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable improved determinism at the expense of performance. Defaults to False.</span>
-
-<span class="sd">    For more information on PhysX determinism, please check `here`_.</span>
-
-<span class="sd">    .. _here: https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyDynamics.html#enhanced-determinism</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">bounce_threshold_velocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Relative velocity threshold for contacts to bounce (in m/s). Default is 0.5 m/s.&quot;&quot;&quot;</span>
-
-    <span class="n">friction_offset_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.04</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Threshold for contact point to experience friction force (in m). Default is 0.04 m.&quot;&quot;&quot;</span>
-
-    <span class="n">friction_correlation_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.025</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Distance threshold for merging contacts into a single friction anchor point (in m). Default is 0.025 m.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_max_rigid_contact_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">23</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of rigid contact stream buffer allocated in pinned host memory. Default is 2 ** 23.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_max_rigid_patch_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">15</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of the rigid contact patch stream buffer allocated in pinned host memory. Default is 5 * 2 ** 15.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_found_lost_pairs_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">21</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capacity of found and lost buffers allocated in GPU global memory. Default is 2 ** 21.</span>
-
-<span class="sd">    This is used for the found/lost pair reports in the BP.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">gpu_found_lost_aggregate_pairs_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">25</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capacity of found and lost buffers in aggregate system allocated in GPU global memory.</span>
-<span class="sd">    Default is 2 ** 25.</span>
-
-<span class="sd">    This is used for the found/lost pair reports in AABB manager.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">gpu_total_aggregate_pairs_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">21</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capacity of total number of aggregate pairs allocated in GPU global memory. Default is 2 ** 21.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_collision_stack_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">26</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of the collision stack buffer allocated in pinned host memory. Default is 2 ** 26.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_heap_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">26</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initial capacity of the GPU and pinned host memory heaps. Additional memory will be allocated</span>
-<span class="sd">    if more memory is required. Default is 2 ** 26.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_temp_buffer_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">24</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capacity of temp buffer allocated in pinned host memory. Default is 2 ** 24.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_max_num_partitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Limitation for the partitions in the GPU dynamics pipeline. Default is 8.</span>
-
-<span class="sd">    This variable must be power of 2. A value greater than 32 is currently not supported. Range: (1, 32)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">gpu_max_soft_body_contacts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of soft body contacts stream buffer allocated in pinned host memory. Default is 2 ** 20.&quot;&quot;&quot;</span>
-
-    <span class="n">gpu_max_particle_contacts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of particle contacts stream buffer allocated in pinned host memory. Default is 2 ** 20.&quot;&quot;&quot;</span></div>
+<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.visualizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">VisualizerCfg</span>
 
 
 <div class="viewcode-block" id="RenderCfg"><a class="viewcode-back" href="../../../source/api/lab/isaaclab.sim.html#isaaclab.sim.RenderCfg">[docs]</a><span class="nd">@configclass</span>
@@ -833,9 +657,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">enable_translucency</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables translucency for specular transmissive surfaces such as glass at the cost of some performance.</span>
-<span class="sd">    Default is False.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables translucency for specular transmissive surfaces such as glass.</span>
 
+<span class="sd">    This comes at the cost of some performance. Default is False.</span>
 <span class="sd">    This is set by the variable: ``/rtx/translucency/enabled``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -855,8 +679,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Selects the anti-aliasing mode to use. Defaults to DLSS.</span>
 
 <span class="sd">    - **DLSS**: Boosts performance by using AI to output higher resolution frames from a lower resolution input.</span>
-<span class="sd">      DLSS samples multiple lower resolution images and uses motion data and feedback from prior frames to</span>
-<span class="sd">      reconstruct native quality images.</span>
+<span class="sd">      DLSS samples multiple lower resolution images and uses motion data and feedback from prior frames to reconstruct</span>
+<span class="sd">      native quality images.</span>
 <span class="sd">    - **DLAA**: Provides higher image quality with an AI-based anti-aliasing technique. DLAA uses the same</span>
 <span class="sd">      Super Resolution technology developed for DLSS, reconstructing a native resolution image to maximize</span>
 <span class="sd">      image quality.</span>
@@ -946,97 +770,12 @@
 <span class="sd">    This is set by the variable: ``/rtx/domeLight/upperLowerStrategy``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">max_bounces</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum number of ray bounces for path tracing (RT2). Default is 2.</span>
-
-<span class="sd">    For global illumination (indirect diffuse), this should be at least 3.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/rtpt/maxBounces``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">split_glass</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables separate glass ray splitting for improved glass rendering (RT2). Default is False.</span>
-
-<span class="sd">    Enabling this can reduce noise on glass materials at the cost of performance.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/rtpt/splitGlass``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">split_clearcoat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables separate clearcoat ray splitting (RT2). Default is False.</span>
-
-<span class="sd">    Enabling this can reduce noise on clearcoat materials at the cost of performance.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/rtpt/splitClearcoat``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">split_rough_reflection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables separate rough reflection ray splitting (RT2). Default is False.</span>
-
-<span class="sd">    Enabling this can reduce noise on rough reflective materials at the cost of performance.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/rtpt/splitRoughReflection``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">ambient_light_intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scene ambient light intensity. Default is 1.0.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/sceneDb/ambientLightIntensity``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">ambient_occlusion_denoiser_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ambient occlusion denoiser mode. Default is 1.</span>
-
-<span class="sd">    Valid values are:</span>
-
-<span class="sd">    * 0: Higher quality denoising</span>
-<span class="sd">    * 1: Performance-oriented denoising</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/ambientOcclusion/denoiserMode``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">subpixel_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raytracing subpixel mode. Default is 0.</span>
-
-<span class="sd">    Valid values are:</span>
-
-<span class="sd">    * 0: Performance mode</span>
-<span class="sd">    * 1: Quality mode (better anti-aliasing)</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/raytracing/subpixel/mode``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">enable_cached_raytracing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables cached raytracing for improved performance. Default is True.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/raytracing/cached/enabled``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">max_samples_per_launch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum samples per launch for path tracing. Default is 1000000.</span>
-
-<span class="sd">    This setting helps avoid replicator warnings when using large tile counts.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/pathtracing/maxSamplesPerLaunch``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">view_tile_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum number of view tiles. Default is 1000000.</span>
-
-<span class="sd">    This setting helps avoid silent trimming of tiles.</span>
-
-<span class="sd">    This is set by the variable: ``/rtx/viewTile/limit``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">carb_settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A general dictionary for users to supply all carb rendering settings with native names.</span>
 
 <span class="sd">    The keys of the dictionary can be formatted like a carb setting, .kit file setting, or python variable.</span>
-<span class="sd">    For instance, a key value pair can be:</span>
-
-<span class="sd">    - ``/rtx/translucency/enabled: False`` (carb)</span>
-<span class="sd">    - ``rtx.translucency.enabled: False`` (.kit)</span>
-<span class="sd">    - ``rtx_translucency_enabled: False`` (python)</span>
+<span class="sd">    For instance, a key value pair can be ``/rtx/translucency/enabled: False`` (carb),</span>
+<span class="sd">    ``rtx.translucency.enabled: False`` (.kit), or ``rtx_translucency_enabled: False`` (python).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">rendering_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;performance&quot;</span><span class="p">,</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="s2">&quot;quality&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1048,10 +787,11 @@
 
 <div class="viewcode-block" id="SimulationCfg"><a class="viewcode-back" href="../../../source/api/lab/isaaclab.sim.html#isaaclab.sim.SimulationCfg">[docs]</a><span class="nd">@configclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimulationCfg</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for simulation physics.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for simulation physics.</span>
 
-    <span class="n">physics_prim_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/physicsScene&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The prim path where the USD PhysicsScene is created. Default is &quot;/physicsScene&quot;.&quot;&quot;&quot;</span>
+<span class="sd">    This class contains the main simulation parameters including physics time-step, gravity,</span>
+<span class="sd">    device settings, and physics backend configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda:0&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The device to run the simulation on. Default is ``&quot;cuda:0&quot;``.</span>
@@ -1066,14 +806,34 @@
     <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">60.0</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The physics simulation time-step (in seconds). Default is 0.0167 seconds.&quot;&quot;&quot;</span>
 
+    <span class="n">gravity</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The gravity vector (in m/s^2). Default is (0.0, 0.0, -9.81).&quot;&quot;&quot;</span>
+
+    <span class="n">physics_prim_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/physicsScene&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The prim path where the USD PhysicsScene is created. Default is &quot;/physicsScene&quot;.&quot;&quot;&quot;</span>
+
+    <span class="n">physics_material</span><span class="p">:</span> <span class="n">RigidBodyMaterialCfg</span> <span class="o">=</span> <span class="n">RigidBodyMaterialCfg</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default physics material settings for rigid bodies. Default is RigidBodyMaterialCfg.</span>
+
+<span class="sd">    The physics engine defaults to this physics material for all the rigid body prims that do not have any</span>
+<span class="sd">    physics material specified on them.</span>
+
+<span class="sd">    The material is created at the path: ``{physics_prim_path}/defaultMaterial``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">use_fabric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable reading of physics buffers directly. Default is True.</span>
+
+<span class="sd">    When running the simulation, updates in the states in the scene is normally synchronized with USD.</span>
+<span class="sd">    This leads to an overhead in reading the data and does not scale well with massive parallelization.</span>
+<span class="sd">    This flag allows disabling the synchronization and reading the data directly from the physics buffers.</span>
+
+<span class="sd">    It is recommended to set this flag to :obj:`True` when running the simulation with a large number</span>
+<span class="sd">    of primitives in the scene.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">render_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The number of physics simulation steps per rendering step. Default is 1.&quot;&quot;&quot;</span>
-
-    <span class="n">gravity</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The gravity vector (in m/s^2). Default is (0.0, 0.0, -9.81).</span>
-
-<span class="sd">    If set to (0.0, 0.0, 0.0), gravity is disabled.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">enable_scene_query_support</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable scene query support for collision shapes. Default is False.</span>
@@ -1090,36 +850,11 @@
 <span class="sd">        with the GUI enabled. This is to allow certain GUI features to work properly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">use_fabric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable/disable reading of physics buffers directly. Default is True.</span>
+    <span class="n">physics</span><span class="p">:</span> <span class="n">PhysicsCfg</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Physics manager configuration. Default is None (uses PhysxCfg()).</span>
 
-<span class="sd">    When running the simulation, updates in the states in the scene is normally synchronized with USD.</span>
-<span class="sd">    This leads to an overhead in reading the data and does not scale well with massive parallelization.</span>
-<span class="sd">    This flag allows disabling the synchronization and reading the data directly from the physics buffers.</span>
-
-<span class="sd">    It is recommended to set this flag to :obj:`True` when running the simulation with a large number</span>
-<span class="sd">    of primitives in the scene.</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        When enabled, the GUI will not update the physics parameters in real-time. To enable real-time</span>
-<span class="sd">        updates, please set this flag to :obj:`False`.</span>
-
-<span class="sd">        When using GPU simulation, it is required to enable Fabric to visualize updates in the renderer.</span>
-<span class="sd">        Transform updates are propagated to the renderer through Fabric. If Fabric is disabled with GPU simulation,</span>
-<span class="sd">        the renderer will not be able to render any updates in the simulation, although simulation will still be</span>
-<span class="sd">        running under the hood.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">physx</span><span class="p">:</span> <span class="n">PhysxCfg</span> <span class="o">=</span> <span class="n">PhysxCfg</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;PhysX solver settings. Default is PhysxCfg().&quot;&quot;&quot;</span>
-
-    <span class="n">physics_material</span><span class="p">:</span> <span class="n">RigidBodyMaterialCfg</span> <span class="o">=</span> <span class="n">RigidBodyMaterialCfg</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default physics material settings for rigid bodies. Default is RigidBodyMaterialCfg().</span>
-
-<span class="sd">    The physics engine defaults to this physics material for all the rigid body prims that do not have any</span>
-<span class="sd">    physics material specified on them.</span>
-
-<span class="sd">    The material is created at the path: ``{physics_prim_path}/defaultMaterial``.</span>
+<span class="sd">    This configuration determines which physics manager to use. Override with</span>
+<span class="sd">    a different config (e.g., NewtonManagerCfg) to use a different physics backend.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">render</span><span class="p">:</span> <span class="n">RenderCfg</span> <span class="o">=</span> <span class="n">RenderCfg</span><span class="p">()</span>
@@ -1142,7 +877,10 @@
 
 <span class="sd">    If :attr:`save_logs_to_file` is True, the logs will be saved to the directory specified by :attr:`log_dir`.</span>
 <span class="sd">    If None, the logs will be saved to the temp directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">visualizer_cfgs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VisualizerCfg</span><span class="p">]</span> <span class="o">|</span> <span class="n">VisualizerCfg</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The list of visualizer configurations. Default is None.&quot;&quot;&quot;</span></div>
 </pre></div>
 
                 </article>

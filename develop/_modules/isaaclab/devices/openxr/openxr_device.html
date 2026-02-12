@@ -654,7 +654,7 @@
 <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">ModuleNotFoundError</span><span class="p">):</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">omni.kit.xr.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">XRCore</span><span class="p">,</span> <span class="n">XRCoreEventType</span><span class="p">,</span> <span class="n">XRPoseValidityFlags</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim.core.prims</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleXFormPrim</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">isaaclab.sim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sim_utils</span>
 
 
 <div class="viewcode-block" id="OpenXRDevice"><a class="viewcode-back" href="../../../../source/api/lab/isaaclab.devices.html#isaaclab.devices.OpenXRDevice">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OpenXRDevice</span><span class="p">(</span><span class="n">DeviceBase</span><span class="p">):</span>
@@ -724,9 +724,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_xr_anchor_headset_path</span> <span class="o">=</span> <span class="s2">&quot;/World/XRAnchor&quot;</span>
 
-        <span class="n">_</span> <span class="o">=</span> <span class="n">SingleXFormPrim</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_xr_anchor_headset_path</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_xr_cfg</span><span class="o">.</span><span class="n">anchor_pos</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_xr_cfg</span><span class="o">.</span><span class="n">anchor_rot</span>
-        <span class="p">)</span>
+        <span class="c1"># Only create the anchor prim if it doesn&#39;t already exist (supports multiple devices sharing anchor)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">sim_utils</span><span class="o">.</span><span class="n">get_current_stage</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetPrimAtPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xr_anchor_headset_path</span><span class="p">)</span><span class="o">.</span><span class="n">IsValid</span><span class="p">():</span>
+            <span class="n">sim_utils</span><span class="o">.</span><span class="n">create_prim</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_xr_anchor_headset_path</span><span class="p">,</span>
+                <span class="n">prim_type</span><span class="o">=</span><span class="s2">&quot;Xform&quot;</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_xr_cfg</span><span class="o">.</span><span class="n">anchor_pos</span><span class="p">,</span>
+                <span class="n">orientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_xr_cfg</span><span class="o">.</span><span class="n">anchor_rot</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">carb</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">):</span>
             <span class="n">carb</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">get_settings</span><span class="p">()</span><span class="o">.</span><span class="n">set_float</span><span class="p">(</span><span class="s2">&quot;/persistent/xr/render/nearPlane&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xr_cfg</span><span class="o">.</span><span class="n">near_plane</span><span class="p">)</span>

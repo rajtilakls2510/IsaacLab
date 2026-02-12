@@ -622,6 +622,8 @@
 <span class="c1">#</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -630,9 +632,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">omni.physx</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim.core.simulation_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationManager</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.managers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionManager</span><span class="p">,</span> <span class="n">EventManager</span><span class="p">,</span> <span class="n">ObservationManager</span><span class="p">,</span> <span class="n">RecorderManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.scene</span><span class="w"> </span><span class="kn">import</span> <span class="n">InteractiveScene</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationContext</span>
@@ -640,7 +639,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.ui.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">ManagerLiveVisualizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.seed</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_seed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.timer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_isaac_sim_version</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">VecEnvObs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.manager_based_env_cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">ManagerBasedEnvCfg</span>
@@ -757,7 +755,7 @@
         <span class="c1"># generate scene</span>
         <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;[INFO]: Time taken for scene creation&quot;</span><span class="p">,</span> <span class="s2">&quot;scene_creation&quot;</span><span class="p">):</span>
             <span class="c1"># set the stage context for scene creation steps which use the stage</span>
-            <span class="k">with</span> <span class="n">use_stage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_initial_stage</span><span class="p">()):</span>
+            <span class="k">with</span> <span class="n">use_stage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stage</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">InteractiveScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">scene</span><span class="p">)</span>
                 <span class="n">attach_stage_to_usd_context</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO]: Scene manager: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">)</span>
@@ -766,7 +764,7 @@
         <span class="c1"># viewport is not available in other rendering modes so the function will throw a warning</span>
         <span class="c1"># FIXME: This needs to be fixed in the future when we unify the UI functionalities even for</span>
         <span class="c1"># non-rendering modes.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render_mode</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">RenderMode</span><span class="o">.</span><span class="n">PARTIAL_RENDERING</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">viewport_camera_controller</span> <span class="o">=</span> <span class="n">ViewportCameraController</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">viewer</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">viewport_camera_controller</span> <span class="o">=</span> <span class="kc">None</span>
@@ -788,7 +786,7 @@
             <span class="k">with</span> <span class="n">Timer</span><span class="p">(</span><span class="s2">&quot;[INFO]: Time taken for simulation start&quot;</span><span class="p">,</span> <span class="s2">&quot;simulation_start&quot;</span><span class="p">):</span>
                 <span class="c1"># since the reset can trigger callbacks which use the stage,</span>
                 <span class="c1"># we need to set the stage context here</span>
-                <span class="k">with</span> <span class="n">use_stage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_initial_stage</span><span class="p">()):</span>
+                <span class="k">with</span> <span class="n">use_stage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stage</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
                 <span class="c1"># update scene to pre populate data buffers for assets and sensors.</span>
                 <span class="c1"># this is needed for the observation manager to get valid tensors for initialization.</span>
@@ -801,14 +799,14 @@
         <span class="c1"># extend UI elements</span>
         <span class="c1"># we need to do this here after all the managers are initialized</span>
         <span class="c1"># this is because they dictate the sensors and commands right now</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ui_window_class_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ui_window_class_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># setup live visualizers</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_manager_visualizers</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ui_window_class_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_name</span><span class="o">=</span><span class="s2">&quot;IsaacLab&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># if no window, then we don&#39;t need to store the window</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="kc">None</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s2">&quot;/isaaclab/render/rtx_sensors&quot;</span><span class="p">)</span>
         <span class="c1"># initialize observation buffers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs_buf</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -994,7 +992,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">write_data_to_sim</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
         <span class="c1"># if sensors are added to the scene, make sure we render to reflect changes in reset</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
@@ -1004,9 +1002,11 @@
         <span class="c1"># compute observations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs_buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_manager</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">update_history</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">wait_for_textures</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">():</span>
-            <span class="k">while</span> <span class="n">SimulationManager</span><span class="o">.</span><span class="n">assets_loading</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">wait_for_textures</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">:</span>
+            <span class="c1"># Wait for assets to finish loading (PhysX-specific)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">physics_manager</span><span class="p">,</span> <span class="s2">&quot;assets_loading&quot;</span><span class="p">):</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">physics_manager</span><span class="o">.</span><span class="n">assets_loading</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
         <span class="c1"># return observations</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs_buf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extras</span></div>
@@ -1055,7 +1055,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
 
         <span class="c1"># if sensors are added to the scene, make sure we render to reflect changes in reset</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_rtx_sensors</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">num_rerenders_on_reset</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
 
@@ -1089,8 +1089,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recorder_manager</span><span class="o">.</span><span class="n">record_pre_step</span><span class="p">()</span>
 
         <span class="c1"># check if we need to do rendering within the physics loop</span>
-        <span class="c1"># note: checked here once to avoid multiple checks within the loop</span>
-        <span class="n">is_rendering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_gui</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_rtx_sensors</span><span class="p">()</span>
+        <span class="c1"># note: uses cached property to avoid settings lookup every step</span>
+        <span class="n">is_rendering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">is_rendering</span>
 
         <span class="c1"># perform physics stepping</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">decimation</span><span class="p">):</span>
@@ -1143,6 +1143,9 @@
 <div class="viewcode-block" id="ManagerBasedEnv.close"><a class="viewcode-back" href="../../../source/api/lab/isaaclab.envs.html#isaaclab.envs.ManagerBasedEnv.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleanup for the environment.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
+            <span class="c1"># Stop simulation first to allow physics to clean up properly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
             <span class="c1"># destructor is order-sensitive</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport_camera_controller</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_manager</span>
@@ -1152,14 +1155,6 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span>
 
             <span class="c1"># clear callbacks and instance</span>
-            <span class="k">if</span> <span class="n">get_isaac_sim_version</span><span class="p">()</span><span class="o">.</span><span class="n">major</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">create_stage_in_memory</span><span class="p">:</span>
-                    <span class="c1"># detach physx stage</span>
-                    <span class="n">omni</span><span class="o">.</span><span class="n">physx</span><span class="o">.</span><span class="n">get_physx_simulation_interface</span><span class="p">()</span><span class="o">.</span><span class="n">detach_stage</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">clear_all_callbacks</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">clear_instance</span><span class="p">()</span>
 
             <span class="c1"># destroy the window</span>

@@ -1928,7 +1928,7 @@ Opengl / USD Camera convention.</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.CameraCfg.offset">
-<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.TiledCameraCfg.OffsetCfg" title="isaaclab.sensors.camera.camera_cfg.CameraCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.offset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.OffsetCfg" title="isaaclab.sensors.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.offset" title="Permalink to this definition">#</a></dt>
 <dd><p>The offset pose of the sensor’s frame from the sensor’s parent frame. Defaults to identity.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1939,7 +1939,7 @@ camera at path <code class="docutils literal notranslate"><span class="pre">/Wor
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.CameraCfg.spawn">
-<span class="sig-name descname"><span class="pre">spawn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.PinholeCameraCfg" title="isaaclab.sim.spawners.sensors.sensors_cfg.PinholeCameraCfg"><span class="pre">PinholeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.FisheyeCameraCfg" title="isaaclab.sim.spawners.sensors.sensors_cfg.FisheyeCameraCfg"><span class="pre">FisheyeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.spawn" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">spawn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.PinholeCameraCfg" title="isaaclab.sim.spawners.sensors.PinholeCameraCfg"><span class="pre">PinholeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.FisheyeCameraCfg" title="isaaclab.sim.spawners.sensors.FisheyeCameraCfg"><span class="pre">FisheyeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.spawn" title="Permalink to this definition">#</a></dt>
 <dd><p>Spawn configuration for the asset.</p>
 <p>If None, then the prim is not spawned by the asset. Instead, it is assumed that the
 asset is already present in the scene.</p>
@@ -1947,7 +1947,7 @@ asset is already present in the scene.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.CameraCfg.depth_clipping_behavior">
-<span class="sig-name descname"><span class="pre">depth_clipping_behavior</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.depth_clipping_behavior" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">depth_clipping_behavior</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.CameraCfg.depth_clipping_behavior" title="Permalink to this definition">#</a></dt>
 <dd><p>Clipping behavior for the camera for values exceed the maximum value. Defaults to “none”.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>: Values are clipped to the maximum value.</p></li>
@@ -2540,7 +2540,7 @@ the current data is stored (no history).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.TiledCameraCfg.offset">
-<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.TiledCameraCfg.OffsetCfg" title="isaaclab.sensors.camera.camera_cfg.CameraCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.offset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.TiledCameraCfg.OffsetCfg" title="isaaclab.sensors.TiledCameraCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.offset" title="Permalink to this definition">#</a></dt>
 <dd><p>The offset pose of the sensor’s frame from the sensor’s parent frame. Defaults to identity.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2551,7 +2551,7 @@ camera at path <code class="docutils literal notranslate"><span class="pre">/Wor
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.TiledCameraCfg.spawn">
-<span class="sig-name descname"><span class="pre">spawn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.PinholeCameraCfg" title="isaaclab.sim.spawners.sensors.sensors_cfg.PinholeCameraCfg"><span class="pre">PinholeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.FisheyeCameraCfg" title="isaaclab.sim.spawners.sensors.sensors_cfg.FisheyeCameraCfg"><span class="pre">FisheyeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.spawn" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">spawn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.PinholeCameraCfg" title="isaaclab.sim.spawners.sensors.PinholeCameraCfg"><span class="pre">PinholeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sim.spawners.html#isaaclab.sim.spawners.sensors.FisheyeCameraCfg" title="isaaclab.sim.spawners.sensors.FisheyeCameraCfg"><span class="pre">FisheyeCameraCfg</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.spawn" title="Permalink to this definition">#</a></dt>
 <dd><p>Spawn configuration for the asset.</p>
 <p>If None, then the prim is not spawned by the asset. Instead, it is assumed that the
 asset is already present in the scene.</p>
@@ -2559,7 +2559,7 @@ asset is already present in the scene.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.TiledCameraCfg.depth_clipping_behavior">
-<span class="sig-name descname"><span class="pre">depth_clipping_behavior</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.depth_clipping_behavior" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">depth_clipping_behavior</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'max'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.TiledCameraCfg.depth_clipping_behavior" title="Permalink to this definition">#</a></dt>
 <dd><p>Clipping behavior for the camera for values exceed the maximum value. Defaults to “none”.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>: Values are clipped to the maximum value.</p></li>
@@ -3732,13 +3732,13 @@ the current data is stored (no history).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.FrameTransformerCfg.source_frame_offset">
-<span class="sig-name descname"><span class="pre">source_frame_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.OffsetCfg" title="isaaclab.sensors.frame_transformer.frame_transformer_cfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.source_frame_offset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">source_frame_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.OffsetCfg" title="isaaclab.sensors.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.source_frame_offset" title="Permalink to this definition">#</a></dt>
 <dd><p>The pose offset from the source prim frame.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.FrameTransformerCfg.target_frames">
-<span class="sig-name descname"><span class="pre">target_frames</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#isaaclab.sensors.FrameTransformerCfg.FrameCfg" title="isaaclab.sensors.frame_transformer.frame_transformer_cfg.FrameTransformerCfg.FrameCfg"><span class="pre">isaaclab.sensors.frame_transformer.frame_transformer_cfg.FrameTransformerCfg.FrameCfg</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.target_frames" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">target_frames</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#isaaclab.sensors.FrameTransformerCfg.FrameCfg" title="isaaclab.sensors.FrameTransformerCfg.FrameCfg"><span class="pre">FrameCfg</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.target_frames" title="Permalink to this definition">#</a></dt>
 <dd><p>A list of the target frames.</p>
 <p>This allows a single FrameTransformer to handle multiple target prims. For example, in a quadruped,
 we can use a single FrameTransformer to track each foot’s position and orientation in the body
@@ -3747,7 +3747,7 @@ frame using four frame offsets.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.FrameTransformerCfg.visualizer_cfg">
-<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.visualization_markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.FrameTransformerCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The configuration object for the visualization markers. Defaults to FRAME_MARKER_CFG.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4088,7 +4088,7 @@ static meshes and dynamic meshes.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCfg.offset">
-<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.RayCasterCfg.OffsetCfg" title="isaaclab.sensors.ray_caster.ray_caster_cfg.RayCasterCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.offset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.RayCasterCfg.OffsetCfg" title="isaaclab.sensors.RayCasterCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.offset" title="Permalink to this definition">#</a></dt>
 <dd><p>The offset pose of the sensor’s frame from the sensor’s parent frame. Defaults to identity.</p>
 </dd></dl>
 
@@ -4139,7 +4139,7 @@ the current data is stored (no history).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCfg.ray_alignment">
-<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
 <dd><p>Specify in what frame the rays are projected onto the ground. Default is “base”.</p>
 <p>The options are:</p>
 <ul class="simple">
@@ -4153,7 +4153,7 @@ with a mapping package on the robot and querying ray-casts in a global frame.</p
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCfg.pattern_cfg">
-<span class="sig-name descname"><span class="pre">pattern_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sensors.patterns.html#isaaclab.sensors.patterns.PatternBaseCfg" title="isaaclab.sensors.ray_caster.patterns.patterns_cfg.PatternBaseCfg"><span class="pre">PatternBaseCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.pattern_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">pattern_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sensors.patterns.html#isaaclab.sensors.patterns.PatternBaseCfg" title="isaaclab.sensors.patterns.PatternBaseCfg"><span class="pre">PatternBaseCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.pattern_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The pattern that defines the local ray starting positions and directions.</p>
 </dd></dl>
 
@@ -4180,7 +4180,7 @@ a dictionary with zero drift for each x, y and z axis.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCfg.visualizer_cfg">
-<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.visualization_markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The configuration object for the visualization markers. Defaults to RAY_CASTER_MARKER_CFG.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4576,7 +4576,7 @@ Defaults to None, which doesn’t raise a warning of deprecated usage.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCameraCfg.ray_alignment">
-<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCameraCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCameraCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
 <dd><p>Specify in what frame the rays are projected onto the ground. Default is “base”.</p>
 <p>The options are:</p>
 <ul class="simple">
@@ -4611,7 +4611,7 @@ a dictionary with zero drift for each x, y and z axis.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.RayCasterCameraCfg.visualizer_cfg">
-<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.visualization_markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCameraCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.RayCasterCameraCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The configuration object for the visualization markers. Defaults to RAY_CASTER_MARKER_CFG.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -5043,7 +5043,7 @@ the current data is stored (no history).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCfg.offset">
-<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.RayCasterCfg.OffsetCfg" title="isaaclab.sensors.ray_caster.ray_caster_cfg.RayCasterCfg.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.offset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#isaaclab.sensors.OffsetCfg" title="isaaclab.sensors.OffsetCfg"><span class="pre">OffsetCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.offset" title="Permalink to this definition">#</a></dt>
 <dd><p>The offset pose of the sensor’s frame from the sensor’s parent frame. Defaults to identity.</p>
 </dd></dl>
 
@@ -5063,7 +5063,7 @@ Defaults to None, which doesn’t raise a warning of deprecated usage.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCfg.ray_alignment">
-<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
 <dd><p>Specify in what frame the rays are projected onto the ground. Default is “base”.</p>
 <p>The options are:</p>
 <ul class="simple">
@@ -5077,7 +5077,7 @@ with a mapping package on the robot and querying ray-casts in a global frame.</p
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCfg.pattern_cfg">
-<span class="sig-name descname"><span class="pre">pattern_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sensors.patterns.html#isaaclab.sensors.patterns.PatternBaseCfg" title="isaaclab.sensors.ray_caster.patterns.patterns_cfg.PatternBaseCfg"><span class="pre">PatternBaseCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.pattern_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">pattern_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.sensors.patterns.html#isaaclab.sensors.patterns.PatternBaseCfg" title="isaaclab.sensors.patterns.PatternBaseCfg"><span class="pre">PatternBaseCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.pattern_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The pattern that defines the local ray starting positions and directions.</p>
 </dd></dl>
 
@@ -5104,7 +5104,7 @@ a dictionary with zero drift for each x, y and z axis.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCfg.visualizer_cfg">
-<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.visualization_markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The configuration object for the visualization markers. Defaults to RAY_CASTER_MARKER_CFG.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -5533,7 +5533,7 @@ Defaults to None, which doesn’t raise a warning of deprecated usage.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCameraCfg.ray_alignment">
-<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCameraCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ray_alignment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'yaw'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'world'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCameraCfg.ray_alignment" title="Permalink to this definition">#</a></dt>
 <dd><p>Specify in what frame the rays are projected onto the ground. Default is “base”.</p>
 <p>The options are:</p>
 <ul class="simple">
@@ -5574,7 +5574,7 @@ a dictionary with zero drift for each x, y and z axis.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="isaaclab.sensors.MultiMeshRayCasterCameraCfg.visualizer_cfg">
-<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.visualization_markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCameraCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">visualizer_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="isaaclab.markers.html#isaaclab.markers.VisualizationMarkersCfg" title="isaaclab.markers.VisualizationMarkersCfg"><span class="pre">VisualizationMarkersCfg</span></a></em><a class="headerlink" href="#isaaclab.sensors.MultiMeshRayCasterCameraCfg.visualizer_cfg" title="Permalink to this definition">#</a></dt>
 <dd><p>The configuration object for the visualization markers. Defaults to RAY_CASTER_MARKER_CFG.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

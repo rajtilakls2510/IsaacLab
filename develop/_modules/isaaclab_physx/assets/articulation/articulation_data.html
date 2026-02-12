@@ -630,11 +630,11 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim.core.simulation_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationManager</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.assets.articulation.base_articulation_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseArticulationData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.buffers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimestampedBuffer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">combine_frame_transforms</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">quat_apply</span><span class="p">,</span> <span class="n">quat_apply_inverse</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab_physx.physics</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysxManager</span> <span class="k">as</span> <span class="n">SimulationManager</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.assets.articulation.articulation_view</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArticulationView</span>

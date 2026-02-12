@@ -636,7 +636,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">prettytable</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrettyTable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim.core.simulation_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysxSchema</span><span class="p">,</span> <span class="n">UsdPhysics</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">isaaclab.utils.math</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">math_utils</span>
@@ -647,6 +646,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArticulationActions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_isaac_sim_version</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.wrench_composer</span><span class="w"> </span><span class="kn">import</span> <span class="n">WrenchComposer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab_physx.physics</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysxManager</span> <span class="k">as</span> <span class="n">SimulationManager</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.articulation_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArticulationData</span>
 

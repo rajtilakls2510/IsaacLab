@@ -743,8 +743,7 @@ be called after the stage is created.</p>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">SimulationContext</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">SimulationCfg</span><span class="p">(</span><span class="n">create_stage_in_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
 <span class="c1"># grab stage in memory and set stage context</span>
-<span class="n">stage_in_memory</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">get_initial_stage</span><span class="p">()</span>
-<span class="k">with</span> <span class="n">stage_utils</span><span class="o">.</span><span class="n">use_stage</span><span class="p">(</span><span class="n">stage_in_memory</span><span class="p">):</span>
+<span class="k">with</span> <span class="n">stage_utils</span><span class="o">.</span><span class="n">use_stage</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">stage</span><span class="p">):</span>
     <span class="c1"># create cartpole scene</span>
     <span class="n">scene_cfg</span> <span class="o">=</span> <span class="n">CartpoleSceneCfg</span><span class="p">(</span><span class="n">num_envs</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
     <span class="n">scene</span> <span class="o">=</span> <span class="n">InteractiveScene</span><span class="p">(</span><span class="n">scene_cfg</span><span class="p">)</span>

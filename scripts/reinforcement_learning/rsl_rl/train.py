@@ -9,11 +9,16 @@
 
 import argparse
 import sys
+from importlib import import_module
+
+import pinocchio
 
 from isaaclab.app import AppLauncher
+from isaaclab.utils.external_functions import call_externally_defined_function
 
 # local imports
 import cli_args  # isort: skip
+
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Train an RL agent with RSL-RL.")
@@ -31,22 +36,29 @@ parser.add_argument(
     "--distributed", action="store_true", default=False, help="Run training with multiple GPUs or nodes."
 )
 parser.add_argument("--export_io_descriptors", action="store_true", default=False, help="Export IO descriptors.")
+parser.add_argument("--external_callback", default=None, help="Fully qualified path to an externally defined callback.")
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
-args_cli, hydra_args = parser.parse_known_args()
+args_cli, remaining_args = parser.parse_known_args()
 
 # always enable cameras to record video
 if args_cli.video:
     args_cli.enable_cameras = True
 
-# clear out sys.argv for Hydra
-sys.argv = [sys.argv[0]] + hydra_args
-
 # launch omniverse app
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
+
+# Call and external callback if requested. This gives opportunity to external code to register the environments
+remaining_args_env_registration = None
+if args_cli.external_callback:
+    remaining_args_env_registration = call_externally_defined_function(args_cli.external_callback)
+
+# clear out sys.argv for Hydra
+remaining_args = list(set(remaining_args) & set(remaining_args_env_registration)) if remaining_args_env_registration else remaining_args
+sys.argv = [sys.argv[0]] + remaining_args
 
 """Check for minimum supported RSL-RL version."""
 

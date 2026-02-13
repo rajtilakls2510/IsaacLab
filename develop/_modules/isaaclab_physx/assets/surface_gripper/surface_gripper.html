@@ -628,7 +628,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wp</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim.core.utils.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">enable_extension</span>
 
@@ -643,6 +645,32 @@
 
 <span class="c1"># import logger</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># -- Warp kernels --</span>
+
+
+<span class="nd">@wp</span><span class="o">.</span><span class="n">kernel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_scalar_at_indices</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+    <span class="n">env_ids</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+    <span class="n">from_mask</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">tid</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">from_mask</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">env_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">env_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">env_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+
+<span class="nd">@wp</span><span class="o">.</span><span class="n">kernel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fill_scalar_at_indices</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">env_ids</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">tid</span><span class="p">()</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">env_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
 
 
 <div class="viewcode-block" id="SurfaceGripper"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SurfaceGripper</span><span class="p">(</span><span class="n">AssetBase</span><span class="p">):</span>
@@ -709,7 +737,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the gripper state buffer.</span>
 
 <span class="sd">        The gripper state is a list of integers:</span>
@@ -720,7 +748,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the gripper command buffer.</span>
 
 <span class="sd">        The gripper command is a list of floats:</span>
@@ -736,8 +764,141 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Operations</span>
+<span class="sd">    Operations - _index / _mask API</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SurfaceGripper.set_grippers_command_index"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.set_grippers_command_index">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_grippers_command_index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">full_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the internal gripper command buffer. This function does not write to the simulation.</span>
+
+<span class="sd">        Possible values for the gripper command are:</span>
+<span class="sd">            - [-1, -0.3] --&gt; Open</span>
+<span class="sd">            - ]-0.3, 0.3[ --&gt; Do nothing</span>
+<span class="sd">            - [0.3, 1] --&gt; Close</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            states: A tensor/array of floats representing the gripper command.</span>
+<span class="sd">            env_ids: Environment indices. Defaults to None (all environments).</span>
+<span class="sd">            full_data: Whether ``states`` is indexed by ``env_ids`` (True) or is compact (False).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+
+        <span class="c1"># Convert torch input to warp</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
+            <span class="n">write_scalar_at_indices</span><span class="p">,</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">env_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">states</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">],</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceGripper.set_grippers_command_mask"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.set_grippers_command_mask">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_grippers_command_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">env_mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the internal gripper command buffer using a boolean mask.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            states: A tensor/array of floats representing the gripper command (full size).</span>
+<span class="sd">            env_mask: Boolean mask of shape (num_envs,). Defaults to None (all environments).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">env_mask</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_grippers_command_index</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceGripper.set_grippers_command"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.set_grippers_command">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_grippers_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the internal gripper command buffer. This function does not write to the simulation.</span>
+
+<span class="sd">        .. deprecated:: v2.0.0</span>
+<span class="sd">            Use :meth:`set_grippers_command_index` instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            states: A tensor of integers representing the gripper command.</span>
+<span class="sd">            indices: A tensor of integers representing the indices. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_env_ids</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_grippers_command_index</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceGripper.update_gripper_properties_index"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.update_gripper_properties_index">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gripper_properties_index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">max_grip_distance</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">coaxial_force_limit</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shear_force_limit</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retry_interval</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env_ids</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">full_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the gripper properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_grip_distance: The maximum grip distance. Shape (num_envs,) or (len(env_ids),).</span>
+<span class="sd">            coaxial_force_limit: The coaxial force limit. Shape (num_envs,) or (len(env_ids),).</span>
+<span class="sd">            shear_force_limit: The shear force limit. Shape (num_envs,) or (len(env_ids),).</span>
+<span class="sd">            retry_interval: The retry interval. Shape (num_envs,) or (len(env_ids),).</span>
+<span class="sd">            env_ids: Environment indices. Defaults to None (all environments).</span>
+<span class="sd">            full_data: Whether input arrays are indexed by ``env_ids`` (True) or compact (False).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+
+        <span class="k">for</span> <span class="n">prop_data</span><span class="p">,</span> <span class="n">prop_buf</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">max_grip_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">coaxial_force_limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">shear_force_limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">retry_interval</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="p">),</span>
+        <span class="p">]:</span>
+            <span class="k">if</span> <span class="n">prop_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
+                    <span class="n">write_scalar_at_indices</span><span class="p">,</span>
+                    <span class="n">dim</span><span class="o">=</span><span class="n">env_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">prop_data</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="p">],</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">prop_buf</span><span class="p">],</span>
+                    <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Convert to list for the GripperView API</span>
+        <span class="n">indices_list</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="n">env_ids</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span><span class="o">.</span><span class="n">set_surface_gripper_properties</span><span class="p">(</span>
+            <span class="n">max_grip_distance</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">shear_force_limit</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">retry_interval</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices_list</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceGripper.update_gripper_properties_mask"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.update_gripper_properties_mask">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gripper_properties_mask</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">max_grip_distance</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">coaxial_force_limit</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shear_force_limit</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retry_interval</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env_mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the gripper properties using a boolean mask.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_grip_distance: The maximum grip distance. Shape (num_envs,).</span>
+<span class="sd">            coaxial_force_limit: The coaxial force limit. Shape (num_envs,).</span>
+<span class="sd">            shear_force_limit: The shear force limit. Shape (num_envs,).</span>
+<span class="sd">            retry_interval: The retry interval. Shape (num_envs,).</span>
+<span class="sd">            env_mask: Boolean mask of shape (num_envs,). Defaults to None (all environments).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">env_mask</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gripper_properties_index</span><span class="p">(</span>
+            <span class="n">max_grip_distance</span><span class="o">=</span><span class="n">max_grip_distance</span><span class="p">,</span>
+            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="n">coaxial_force_limit</span><span class="p">,</span>
+            <span class="n">shear_force_limit</span><span class="o">=</span><span class="n">shear_force_limit</span><span class="p">,</span>
+            <span class="n">retry_interval</span><span class="o">=</span><span class="n">retry_interval</span><span class="p">,</span>
+            <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span>
+            <span class="n">full_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfaceGripper.update_gripper_properties"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.update_gripper_properties">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_gripper_properties</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -749,34 +910,32 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the gripper properties.</span>
 
+<span class="sd">        .. deprecated:: v2.0.0</span>
+<span class="sd">            Use :meth:`update_gripper_properties_index` instead.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            max_grip_distance: The maximum grip distance of the gripper. Should be a tensor of shape (num_envs,).</span>
-<span class="sd">            coaxial_force_limit: The coaxial force limit of the gripper. Should be a tensor of shape (num_envs,).</span>
-<span class="sd">            shear_force_limit: The shear force limit of the gripper. Should be a tensor of shape (num_envs,).</span>
-<span class="sd">            retry_interval: The retry interval of the gripper. Should be a tensor of shape (num_envs,).</span>
-<span class="sd">            indices: The indices of the grippers to update the properties for. Can be a tensor of any shape.</span>
+<span class="sd">            max_grip_distance: The maximum grip distance. Shape (num_envs,).</span>
+<span class="sd">            coaxial_force_limit: The coaxial force limit. Shape (num_envs,).</span>
+<span class="sd">            shear_force_limit: The shear force limit. Shape (num_envs,).</span>
+<span class="sd">            retry_interval: The retry interval. Shape (num_envs,).</span>
+<span class="sd">            indices: The indices of the grippers to update. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_env_ids</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="c1"># Convert torch inputs to warp</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_to_wp</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">t</span>
 
-        <span class="n">indices_as_list</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">max_grip_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_grip_distance</span>
-        <span class="k">if</span> <span class="n">coaxial_force_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">coaxial_force_limit</span>
-        <span class="k">if</span> <span class="n">shear_force_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">shear_force_limit</span>
-        <span class="k">if</span> <span class="n">retry_interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">retry_interval</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span><span class="o">.</span><span class="n">set_surface_gripper_properties</span><span class="p">(</span>
-            <span class="n">max_grip_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="n">shear_force_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="n">retry_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices_as_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gripper_properties_index</span><span class="p">(</span>
+            <span class="n">max_grip_distance</span><span class="o">=</span><span class="n">_to_wp</span><span class="p">(</span><span class="n">max_grip_distance</span><span class="p">),</span>
+            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="n">_to_wp</span><span class="p">(</span><span class="n">coaxial_force_limit</span><span class="p">),</span>
+            <span class="n">shear_force_limit</span><span class="o">=</span><span class="n">_to_wp</span><span class="p">(</span><span class="n">shear_force_limit</span><span class="p">),</span>
+            <span class="n">retry_interval</span><span class="o">=</span><span class="n">_to_wp</span><span class="p">(</span><span class="n">retry_interval</span><span class="p">),</span>
+            <span class="n">env_ids</span><span class="o">=</span><span class="n">env_ids</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfaceGripper.update"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -800,7 +959,7 @@
 <span class="sd">            with the object if some conditions are met: such as if a large force is applied to the gripped object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">state_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span><span class="o">.</span><span class="n">get_surface_gripper_status</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">state_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state_list</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfaceGripper.write_data_to_sim"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.write_data_to_sim">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_data_to_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the gripper command to the SurfaceGripperView.</span>
@@ -812,52 +971,72 @@
 
 <span class="sd">        The Do nothing command is not applied, and is only used to indicate whether the gripper state has changed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert to torch at the GripperView boundary (zero-copy on CPU)</span>
+        <span class="n">command_torch</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">)</span>
         <span class="c1"># Remove the SurfaceGripper indices that have a commanded value of 2</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">))</span>
-            <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">command_torch</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">command_torch</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="c1"># Write to the SurfaceGripperView if there are any indices to write to</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span><span class="o">.</span><span class="n">apply_gripper_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">indices</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span><span class="o">.</span><span class="n">apply_gripper_action</span><span class="p">(</span><span class="n">command_torch</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">indices</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SurfaceGripper.set_grippers_command"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.set_grippers_command">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_grippers_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the internal gripper command buffer. This function does not write to the simulation.</span>
-
-<span class="sd">        Possible values for the gripper command are:</span>
-<span class="sd">            - [-1, -0.3] --&gt; Open</span>
-<span class="sd">            - ]-0.3, 0.3[ --&gt; Do nothing</span>
-<span class="sd">            - [0.3, 1] --&gt; Close</span>
+<div class="viewcode-block" id="SurfaceGripper.reset_index"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.reset_index">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the gripper command buffer.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            states: A tensor of integers representing the gripper command. Shape must match that of indices.</span>
-<span class="sd">            indices: A tensor of integers representing the indices of the grippers to set the command for. Defaults</span>
-<span class="sd">                     to None, in which case all grippers are set.</span>
+<span class="sd">            env_ids: Environment indices. Defaults to None (all environments).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="k">if</span> <span class="n">env_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span></div>
+        <span class="c1"># Reset the selected grippers to an open status</span>
+        <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
+            <span class="n">fill_scalar_at_indices</span><span class="p">,</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">env_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">env_ids</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">],</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_data_to_sim</span><span class="p">()</span>
+        <span class="c1"># Sets the gripper last command to be 0.0 (do nothing)</span>
+        <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
+            <span class="n">fill_scalar_at_indices</span><span class="p">,</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">env_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">env_ids</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">],</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Force set the state to open. It will read open in the next update call.</span>
+        <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
+            <span class="n">fill_scalar_at_indices</span><span class="p">,</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">env_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">env_ids</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span><span class="p">],</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceGripper.reset_mask"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.reset_mask">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the gripper command buffer using a boolean mask.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            env_mask: Boolean mask of shape (num_envs,). Defaults to None (all environments).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">env_mask</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">env_ids</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfaceGripper.reset"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the gripper command buffer.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            indices: A tensor of integers representing the indices of the grippers to reset the command for. Defaults</span>
-<span class="sd">                     to None, in which case all grippers are reset.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Would normally set the buffer to 0, for now we won&#39;t do that</span>
-        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+<span class="sd">        .. deprecated:: v2.0.0</span>
+<span class="sd">            Use :meth:`reset_index` instead.</span>
 
-        <span class="c1"># Reset the selected grippers to an open status</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_data_to_sim</span><span class="p">()</span>
-        <span class="c1"># Sets the gripper last command to be 0.0 (do nothing)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># Force set the state to open. It will read open in the next update call.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span></div>
+<span class="sd">        Args:</span>
+<span class="sd">            indices: A tensor of integers representing the indices of the grippers to reset. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_env_ids</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">env_ids</span><span class="p">)</span></div>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialization.</span>
@@ -925,17 +1104,15 @@
         <span class="c1"># Process the configuration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_cfg</span><span class="p">()</span>
 
-        <span class="c1"># Initialize gripper view and set properties. Note we do not set the properties through the gripper view</span>
-        <span class="c1"># to avoid having to convert them to list of floats here. Instead, we do it in the update_gripper_properties</span>
-        <span class="c1"># function which does this conversion internally.</span>
+        <span class="c1"># Initialize gripper view and set properties.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_view</span> <span class="o">=</span> <span class="n">GripperView</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prim_expr</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_gripper_properties</span><span class="p">(</span>
-            <span class="n">max_grip_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
-            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
-            <span class="n">shear_force_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
-            <span class="n">retry_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gripper_properties_index</span><span class="p">(</span>
+            <span class="n">max_grip_distance</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span><span class="p">),</span>
+            <span class="n">coaxial_force_limit</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span><span class="p">),</span>
+            <span class="n">shear_force_limit</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span><span class="p">),</span>
+            <span class="n">retry_interval</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span><span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># log information about the surface gripper</span>
@@ -943,18 +1120,18 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of instances: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Reset grippers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_buffers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the buffers for storing the gripper state, command, and properties.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_state</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gripper_command</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_grip_distance</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coaxial_force_limit</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shear_force_limit</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_interval</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_envs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the configuration for the gripper properties.&quot;&quot;&quot;</span>
@@ -1001,15 +1178,35 @@
 <span class="sd">    Helper functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_env_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_ids</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve environment indices to a warp array.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            env_ids: Environment indices. Can be None, a slice, a list, or a torch.Tensor.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A warp array of int32 indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">env_ids</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ALL_INDICES</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env_ids</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">env_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">env_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">env_ids</span>
+
 <div class="viewcode-block" id="SurfaceGripper.parse_gripper_parameter"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.SurfaceGripper.parse_gripper_parameter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_gripper_parameter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cfg_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the gripper parameter.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cfg_value: The value to parse. Can be a float, int, tuple, or None.</span>
 <span class="sd">            default_value: The default value to use if cfg_value is None. Can be a float, int, tuple, or None.</span>
 <span class="sd">            ndim: The number of dimensions of the parameter. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A warp array of float32 values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Adjust the buffer size based on the number of dimensions</span>
         <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1045,7 +1242,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The parameter value is None and no default value is provided.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">param</span></div></div>
+        <span class="c1"># Convert to warp</span>
+        <span class="k">return</span> <span class="n">wp</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div></div>
 </pre></div>
 
                 </article>

@@ -741,6 +741,10 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBuffer.timestamp"><code class="docutils literal notranslate"><span class="pre">TimestampedBuffer.timestamp</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBufferWarp"><code class="docutils literal notranslate"><span class="pre">TimestampedBufferWarp</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBufferWarp.__init__"><code class="docutils literal notranslate"><span class="pre">TimestampedBufferWarp.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-isaaclab.utils.datasets">Datasets operations</a></li>
@@ -1479,6 +1483,9 @@ asset. It will block execution until the check completes or times out.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#isaaclab.utils.buffers.TimestampedBuffer" title="isaaclab.utils.buffers.TimestampedBuffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimestampedBuffer</span></code></a></p></td>
 <td><p>A buffer class containing data and its timestamp.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#isaaclab.utils.buffers.TimestampedBufferWarp" title="isaaclab.utils.buffers.TimestampedBufferWarp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimestampedBufferWarp</span></code></a></p></td>
+<td><p>A buffer class containing data and its timestamp.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1836,6 +1843,50 @@ the <a class="reference internal" href="isaaclab.assets.html#module-isaaclab.ass
 <dt class="sig sig-object py" id="isaaclab.utils.buffers.TimestampedBuffer.timestamp">
 <span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1.0</span></em><a class="headerlink" href="#isaaclab.utils.buffers.TimestampedBuffer.timestamp" title="Permalink to this definition">#</a></dt>
 <dd><p>Timestamp at the last update of the buffer. Default is -1.0, indicating that the buffer has not been updated.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="isaaclab.utils.buffers.TimestampedBufferWarp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">isaaclab.utils.buffers.</span></span><span class="sig-name descname"><span class="pre">TimestampedBufferWarp</span></span><a class="reference internal" href="../../../_modules/isaaclab/utils/buffers/timestamped_buffer_warp.html#TimestampedBufferWarp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#isaaclab.utils.buffers.TimestampedBufferWarp" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A buffer class containing data and its timestamp.</p>
+<p>This class is a simple data container that stores a tensor and its timestamp. The timestamp is used to
+track the last update of the buffer. The timestamp is set to -1.0 by default, indicating that the buffer
+has not been updated yet. The timestamp should be updated whenever the data in the buffer is updated. This
+way the buffer can be used to check whether the data is outdated and needs to be refreshed.</p>
+<p>The buffer is useful for creating lazy buffers that only update the data when it is outdated. This can be
+useful when the data is expensive to compute or retrieve. For example usage, refer to the data classes in
+the <a class="reference internal" href="isaaclab.assets.html#module-isaaclab.assets" title="isaaclab.assets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">isaaclab.assets</span></code></a> module.</p>
+<p><strong>Methods:</strong></p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#isaaclab.utils.buffers.TimestampedBufferWarp.__init__" title="isaaclab.utils.buffers.TimestampedBufferWarp.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(shape, device, dtype)</p></td>
+<td><p>Initializes the timestamped buffer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="isaaclab.utils.buffers.TimestampedBufferWarp.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/isaaclab/utils/buffers/timestamped_buffer_warp.html#TimestampedBufferWarp.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#isaaclab.utils.buffers.TimestampedBufferWarp.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes the timestamped buffer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the <a class="reference internal" href="#isaaclab.utils.buffers.TimestampedBuffer" title="isaaclab.utils.buffers.TimestampedBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimestampedBuffer</span></code></a> class in the <a class="reference internal" href="#module-isaaclab.utils.buffers" title="isaaclab.utils.buffers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">isaaclab.utils.buffers</span></code></a> module,
+this class allocates the memory on init. Ideally, users should avoid to overwrite the data after
+initialization and should use data.assign(…) whenever possible.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> – The shape of the data.</p></li>
+<li><p><strong>device</strong> – The device used for the data.</p></li>
+<li><p><strong>dtype</strong> – The data type of the data.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -5677,6 +5728,10 @@ The returned tensor contains <code class="xref py py-obj docutils literal notran
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBuffer.data"><code class="docutils literal notranslate"><span class="pre">TimestampedBuffer.data</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBuffer.__init__"><code class="docutils literal notranslate"><span class="pre">TimestampedBuffer.__init__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBuffer.timestamp"><code class="docutils literal notranslate"><span class="pre">TimestampedBuffer.timestamp</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBufferWarp"><code class="docutils literal notranslate"><span class="pre">TimestampedBufferWarp</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#isaaclab.utils.buffers.TimestampedBufferWarp.__init__"><code class="docutils literal notranslate"><span class="pre">TimestampedBufferWarp.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>

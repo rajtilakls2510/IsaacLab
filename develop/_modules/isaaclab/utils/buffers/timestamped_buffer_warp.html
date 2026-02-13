@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>isaaclab_physx.assets.deformable_object.deformable_object_data &#8212; Isaac Lab Documentation</title>
+    <title>isaaclab.utils.buffers.timestamped_buffer_warp &#8212; Isaac Lab Documentation</title>
   
   
   
@@ -54,7 +54,7 @@
     <script src="../../../../_static/copybutton.js"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script src="../../../../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/isaaclab_physx/assets/deformable_object/deformable_object_data';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/isaaclab/utils/buffers/timestamped_buffer_warp';</script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -158,7 +158,7 @@
             <label for="version-select" style="font-weight: bold; display: block;">Version</label>
           </div>
           <select id="version-select" class="version-dropdown" style="margin: 0 auto; display: block;" onchange="location = this.value;">
-            <option value="deformable_object_data.html" selected>develop</option>
+            <option value="timestamped_buffer_warp.html" selected>develop</option>
             <option value="../../../../../main/index.html" >main</option>
             <option value="../../../../../release/2.1.0/index.html" >release/2.1.0</option>
             <option value="../../../../../release/2.2.0/index.html" >release/2.2.0</option>
@@ -546,7 +546,7 @@
       
       
       
-      <li><a href="https://github.com/isaac-sim/IsaacLab/issues/new?title=Issue%20on%20page%20%2F_modules/isaaclab_physx/assets/deformable_object/deformable_object_data.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/isaac-sim/IsaacLab/issues/new?title=Issue%20on%20page%20%2F_modules/isaaclab/utils/buffers/timestamped_buffer_warp.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -616,292 +616,42 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for isaaclab_physx.assets.deformable_object.deformable_object_data</h1><div class="highlight"><pre>
+  <h1>Source code for isaaclab.utils.buffers.timestamped_buffer_warp</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright (c) 2022-2026, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">warp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wp</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">omni.physics.tensors.impl.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">physx</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">isaaclab.utils.buffers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimestampedBufferWarp</span> <span class="k">as</span> <span class="n">TimestampedBuffer</span>
+<div class="viewcode-block" id="TimestampedBufferWarp"><a class="viewcode-back" href="../../../../source/api/lab/isaaclab.utils.html#isaaclab.utils.buffers.TimestampedBufferWarp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TimestampedBufferWarp</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A buffer class containing data and its timestamp.</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_mean_vec3f_over_vertices</span><span class="p">,</span> <span class="n">compute_nodal_state_w</span><span class="p">,</span> <span class="n">vec6f</span>
+<span class="sd">    This class is a simple data container that stores a tensor and its timestamp. The timestamp is used to</span>
+<span class="sd">    track the last update of the buffer. The timestamp is set to -1.0 by default, indicating that the buffer</span>
+<span class="sd">    has not been updated yet. The timestamp should be updated whenever the data in the buffer is updated. This</span>
+<span class="sd">    way the buffer can be used to check whether the data is outdated and needs to be refreshed.</span>
 
-
-<div class="viewcode-block" id="DeformableObjectData"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.DeformableObjectData">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DeformableObjectData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container for a deformable object.</span>
-
-<span class="sd">    This class contains the data for a deformable object in the simulation. The data includes the nodal states of</span>
-<span class="sd">    the root deformable body in the object. The data is stored in the simulation world frame unless otherwise specified.</span>
-
-<span class="sd">    A deformable object in PhysX uses two tetrahedral meshes to represent the object:</span>
-
-<span class="sd">    1. **Simulation mesh**: This mesh is used for the simulation and is the one that is deformed by the solver.</span>
-<span class="sd">    2. **Collision mesh**: This mesh only needs to match the surface of the simulation mesh and is used for</span>
-<span class="sd">       collision detection.</span>
-
-<span class="sd">    The APIs exposed provides the data for both the simulation and collision meshes. These are specified</span>
-<span class="sd">    by the `sim` and `collision` prefixes in the property names.</span>
-
-<span class="sd">    The data is lazily updated, meaning that the data is only updated when it is accessed. This is useful</span>
-<span class="sd">    when the data is expensive to compute or retrieve. The data is updated when the timestamp of the buffer</span>
-<span class="sd">    is older than the current simulation timestamp. The timestamp is updated whenever the data is updated.</span>
+<span class="sd">    The buffer is useful for creating lazy buffers that only update the data when it is outdated. This can be</span>
+<span class="sd">    useful when the data is expensive to compute or retrieve. For example usage, refer to the data classes in</span>
+<span class="sd">    the :mod:`isaaclab.assets` module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_view</span><span class="p">:</span> <span class="n">physx</span><span class="o">.</span><span class="n">SoftBodyView</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the deformable object data.</span>
+<div class="viewcode-block" id="TimestampedBufferWarp.__init__"><a class="viewcode-back" href="../../../../source/api/lab/isaaclab.utils.html#isaaclab.utils.buffers.TimestampedBufferWarp.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the timestamped buffer.</span>
+
+<span class="sd">        .. note:: Unlike the :class:`TimestampedBuffer` class in the :mod:`isaaclab.utils.buffers` module,</span>
+<span class="sd">            this class allocates the memory on init. Ideally, users should avoid to overwrite the data after</span>
+<span class="sd">            initialization and should use data.assign(...) whenever possible.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            root_view: The root deformable body view of the object.</span>
-<span class="sd">            device: The device used for processing.</span>
+<span class="sd">            shape: The shape of the data.</span>
+<span class="sd">            device: The device used for the data.</span>
+<span class="sd">            dtype: The data type of the data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Set the parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
-        <span class="c1"># Set the root deformable body view</span>
-        <span class="c1"># note: this is stored as a weak reference to avoid circular references between the asset class</span>
-        <span class="c1">#  and the data container. This is important to avoid memory leaks.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="p">:</span> <span class="n">physx</span><span class="o">.</span><span class="n">SoftBodyView</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">root_view</span><span class="p">)</span>
-
-        <span class="c1"># Store dimensions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span> <span class="o">=</span> <span class="n">root_view</span><span class="o">.</span><span class="n">count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span> <span class="o">=</span> <span class="n">root_view</span><span class="o">.</span><span class="n">max_sim_vertices_per_body</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span> <span class="o">=</span> <span class="n">root_view</span><span class="o">.</span><span class="n">max_sim_elements_per_body</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span> <span class="o">=</span> <span class="n">root_view</span><span class="o">.</span><span class="n">max_elements_per_body</span>
-
-        <span class="c1"># Set initial time stamp</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="c1"># Initialize the lazy buffers.</span>
-        <span class="c1"># -- node state in simulation world frame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_pos_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_vel_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_state_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">vec6f</span><span class="p">)</span>
-        <span class="c1"># -- mesh element-wise rotations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_quat_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">quatf</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_quat_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">quatf</span>
-        <span class="p">)</span>
-        <span class="c1"># -- mesh element-wise deformation gradients</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_deform_gradient_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">float32</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_deform_gradient_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">float32</span>
-        <span class="p">)</span>
-        <span class="c1"># -- mesh element-wise stresses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_stress_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">float32</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_stress_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">float32</span>
-        <span class="p">)</span>
-        <span class="c1"># -- derived: root pos/vel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_root_pos_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_root_vel_w</span> <span class="o">=</span> <span class="n">TimestampedBuffer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,),</span> <span class="n">device</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-
-<div class="viewcode-block" id="DeformableObjectData.update"><a class="viewcode-back" href="../../../../source/api/lab_physx/isaaclab_physx.assets.html#isaaclab_physx.assets.DeformableObjectData.update">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the data for the deformable object.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            dt: The time step for the update. This must be a positive value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># update the simulation timestamp</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span> <span class="o">+=</span> <span class="n">dt</span></div>
-
-    <span class="c1">##</span>
-    <span class="c1"># Defaults.</span>
-    <span class="c1">##</span>
-
-    <span class="n">default_nodal_state_w</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default nodal state ``[nodal_pos, nodal_vel]`` in simulation world frame.</span>
-<span class="sd">    Shape is (num_instances, max_sim_vertices_per_body) with dtype vec6f.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1">##</span>
-    <span class="c1"># Kinematic commands</span>
-    <span class="c1">##</span>
-
-    <span class="n">nodal_kinematic_target</span><span class="p">:</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulation mesh kinematic targets for the deformable bodies.</span>
-<span class="sd">    Shape is (num_instances, max_sim_vertices_per_body) with dtype vec4f.</span>
-
-<span class="sd">    The kinematic targets are used to drive the simulation mesh vertices to the target positions.</span>
-<span class="sd">    The targets are stored as (x, y, z, is_not_kinematic) where &quot;is_not_kinematic&quot; is a binary</span>
-<span class="sd">    flag indicating whether the vertex is kinematic or not. The flag is set to 0 for kinematic vertices</span>
-<span class="sd">    and 1 for non-kinematic vertices.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1">##</span>
-    <span class="c1"># Properties.</span>
-    <span class="c1">##</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nodal_pos_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Nodal positions in simulation world frame. Shape is (num_instances, max_sim_vertices_per_body) vec3f.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_pos_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="c1"># get_sim_nodal_positions() returns (N, V, 3) float32 — view as (N, V) vec3f</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_pos_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_sim_nodal_positions</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">))</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_pos_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_pos_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nodal_vel_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Nodal velocities in simulation world frame. Shape is (num_instances, max_sim_vertices_per_body) vec3f.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_vel_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_vel_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_sim_nodal_velocities</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">vec3f</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">))</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_vel_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_vel_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nodal_state_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Nodal state ``[nodal_pos, nodal_vel]`` in simulation world frame.</span>
-<span class="sd">        Shape is (num_instances, max_sim_vertices_per_body) vec6f.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_state_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
-                <span class="n">compute_nodal_state_w</span><span class="p">,</span>
-                <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">),</span>
-                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodal_pos_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodal_vel_w</span><span class="p">],</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodal_state_w</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_state_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodal_state_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sim_element_quat_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulation mesh element-wise rotations as quaternions for the deformable bodies in simulation world frame.</span>
-<span class="sd">        Shape is (num_instances, max_sim_elements_per_body, 4).</span>
-
-<span class="sd">        The rotations are stored as quaternions in the order (x, y, z, w).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_quat_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_quat_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_sim_element_rotations</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-                <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">quatf</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_quat_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_quat_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">collision_element_quat_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collision mesh element-wise rotations as quaternions for the deformable bodies in simulation world frame.</span>
-<span class="sd">        Shape is (num_instances, max_collision_elements_per_body, 4).</span>
-
-<span class="sd">        The rotations are stored as quaternions in the order (x, y, z, w).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_quat_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_quat_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_element_rotations</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-                <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">quatf</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_quat_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_quat_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sim_element_deform_gradient_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulation mesh element-wise second-order deformation gradient tensors for the deformable bodies</span>
-<span class="sd">        in simulation world frame. Shape is (num_instances, max_sim_elements_per_body, 3, 3).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_deform_gradient_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_deform_gradient_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_sim_element_deformation_gradients</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_deform_gradient_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_deform_gradient_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">collision_element_deform_gradient_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collision mesh element-wise second-order deformation gradient tensors for the deformable bodies</span>
-<span class="sd">        in simulation world frame. Shape is (num_instances, max_collision_elements_per_body, 3, 3).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_deform_gradient_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_deform_gradient_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_element_deformation_gradients</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_deform_gradient_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_deform_gradient_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sim_element_stress_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulation mesh element-wise second-order Cauchy stress tensors for the deformable bodies</span>
-<span class="sd">        in simulation world frame. Shape is (num_instances, max_sim_elements_per_body, 3, 3).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_stress_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_stress_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_sim_element_stresses</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_stress_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_element_stress_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">collision_element_stress_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collision mesh element-wise second-order Cauchy stress tensors for the deformable bodies</span>
-<span class="sd">        in simulation world frame. Shape is (num_instances, max_collision_elements_per_body, 3, 3).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_stress_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_stress_w</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_view</span><span class="o">.</span><span class="n">get_element_stresses</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_collision_elements</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_stress_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collision_element_stress_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="c1">##</span>
-    <span class="c1"># Derived properties.</span>
-    <span class="c1">##</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">root_pos_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Root position from nodal positions of the simulation mesh for the deformable bodies in simulation</span>
-<span class="sd">        world frame. Shape is (num_instances, 3).</span>
-
-<span class="sd">        This quantity is computed as the mean of the nodal positions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_pos_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
-                <span class="n">compute_mean_vec3f_over_vertices</span><span class="p">,</span>
-                <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,),</span>
-                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodal_pos_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">],</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_pos_w</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_root_pos_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_pos_w</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">root_vel_w</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">wp</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Root velocity from vertex velocities for the deformable bodies in simulation world frame.</span>
-<span class="sd">        Shape is (num_instances, 3).</span>
-
-<span class="sd">        This quantity is computed as the mean of the nodal velocities.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_vel_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span><span class="p">:</span>
-            <span class="n">wp</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span>
-                <span class="n">compute_mean_vec3f_over_vertices</span><span class="p">,</span>
-                <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_instances</span><span class="p">,),</span>
-                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodal_vel_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_sim_vertices</span><span class="p">],</span>
-                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_vel_w</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_root_vel_w</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_timestamp</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_vel_w</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span></div></div>
 </pre></div>
 
                 </article>

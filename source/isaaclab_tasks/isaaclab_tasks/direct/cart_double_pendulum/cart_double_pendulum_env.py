@@ -195,6 +195,74 @@ def normalize_angle(angle):
     return (angle + math.pi) % (2 * math.pi) - math.pi
 
 
+@configclass
+class CartDoublePendulumDownEnvCfg(CartDoublePendulumEnvCfg):
+    # Spawn Pole and Pendulum within a list of ranges
+    initial_pole_angle_ranges = [[-1.0, -0.8], [0.8, 1.0]]
+    initial_pendulum_angle_ranges = [[-1.0, -0.8], [0.8, 1.0]]
+
+
+class CartDoublePendulumDownEnv(CartDoublePendulumEnv):
+    cfg: CartDoublePendulumDownEnvCfg
+
+    def __init__(self, cfg: CartDoublePendulumDownEnvCfg, render_mode: str | None = None, **kwargs):
+        super().__init__(cfg, render_mode, **kwargs)
+
+    def _get_dones(self) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+        # Just applies out_of_bounds check on Cart DOF and not on Pole DOF
+        self.joint_pos = self.robot.data.joint_pos
+        self.joint_vel = self.robot.data.joint_vel
+
+        time_out = self.episode_length_buf >= self.max_episode_length - 1
+        out_of_bounds = torch.any(torch.abs(self.joint_pos[:, self._cart_dof_idx]) > self.cfg.max_cart_pos, dim=1)
+        # out_of_bounds = out_of_bounds | torch.any(torch.abs(self.joint_pos[:, self._pole_dof_idx]) > math.pi / 2, dim=1)
+
+        terminated = {agent: out_of_bounds for agent in self.cfg.possible_agents}
+        time_outs = {agent: time_out for agent in self.cfg.possible_agents}
+        return terminated, time_outs
+
+    
+    def _reset_idx(self, env_ids: Sequence[int] | None):
+        if env_ids is None:
+            env_ids = self.robot._ALL_INDICES
+        DirectMARLEnv._reset_idx(self, env_ids)
+
+        joint_pos = self.robot.data.default_joint_pos[env_ids]
+        num_envs = joint_pos.shape[0]
+        pole_angle_ranges = torch.tensor(self.cfg.initial_pole_angle_ranges, device=joint_pos.device) * math.pi
+        pole_angle_range_ids = torch.randint(0, pole_angle_ranges.shape[0], (num_envs,), device=joint_pos.device)
+        pole_angle_lower = pole_angle_ranges[pole_angle_range_ids, 0].unsqueeze(-1)
+        pole_angle_upper = pole_angle_ranges[pole_angle_range_ids, 1].unsqueeze(-1)
+        joint_pos[:, self._pole_dof_idx] += sample_uniform(
+            pole_angle_lower, 
+            pole_angle_upper, 
+            joint_pos[:, self._pole_dof_idx].shape, 
+            joint_pos.device
+        )
+        pendulum_angle_ranges = torch.tensor(self.cfg.initial_pendulum_angle_ranges, device=joint_pos.device) * math.pi
+        pendulum_angle_range_ids = torch.randint(0, pendulum_angle_ranges.shape[0], (num_envs,), device=joint_pos.device)
+        pendulum_angle_lower = pendulum_angle_ranges[pendulum_angle_range_ids, 0].unsqueeze(-1)
+        pendulum_angle_upper = pendulum_angle_ranges[pendulum_angle_range_ids, 1].unsqueeze(-1)
+        joint_pos[:, self._pendulum_dof_idx] += sample_uniform(
+            pendulum_angle_lower, 
+            pendulum_angle_upper, 
+            joint_pos[:, self._pendulum_dof_idx].shape, 
+            joint_pos.device
+        )
+        joint_vel = self.robot.data.default_joint_vel[env_ids]
+
+        default_root_state = self.robot.data.default_root_state[env_ids]
+        default_root_state[:, :3] += self.scene.env_origins[env_ids]
+
+        self.joint_pos[env_ids] = joint_pos
+        self.joint_vel[env_ids] = joint_vel
+
+        self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
+        self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
+        self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
+
+
+
 @torch.jit.script
 def compute_rewards(
     rew_scale_alive: float,

@@ -43,7 +43,7 @@ EXTRAS_REQUIRE = {
     "sb3": ["stable-baselines3>=2.6", "tqdm", "rich"],  # tqdm/rich for progress bar
     "skrl": ["skrl>=1.4.3"],
     "rl-games": [
-        "rl-games @ git+https://github.com/isaac-sim/rl_games.git@python3.11",
+        "rl-games @ git+https://github.com/rajtilakls2510/rl_games@add-td3",
         "gym",
     ],  # rl-games still needs gym :(
     "rsl-rl": ["rsl-rl-lib==3.1.2", "onnxscript>=0.5"],  # linux aarch 64 requires manual onnxscript installation

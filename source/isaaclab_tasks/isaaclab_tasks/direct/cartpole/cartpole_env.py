@@ -153,6 +153,56 @@ class CartpoleEnv(DirectRLEnv):
         self.cartpole.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
 
 
+@configclass
+class CartpoleDownEnvCfg(CartpoleEnvCfg):
+    # initial pole angle range can take a list of ranges
+    initial_pole_angle_ranges = [[-1.0, -0.8], [1.0, 0.8]]
+
+
+class CartpoleDownEnv(CartpoleEnv):
+    # Starts the episode in a pole down configuration
+    cfg: CartpoleDownEnvCfg
+
+    def __init__(self, cfg: CartpoleDownEnvCfg, render_mode: str | None = None, **kwargs):
+        super().__init__(cfg, render_mode, **kwargs)
+
+    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        # Just applies out_of_bounds check on Cart DOF and not on Pole DOF
+        self.joint_pos = self.cartpole.data.joint_pos
+        self.joint_vel = self.cartpole.data.joint_vel
+
+        time_out = self.episode_length_buf >= self.max_episode_length - 1
+        out_of_bounds = torch.any(torch.abs(self.joint_pos[:, self._cart_dof_idx]) > self.cfg.max_cart_pos, dim=1)
+        # out_of_bounds = out_of_bounds | torch.any(torch.abs(self.joint_pos[:, self._pole_dof_idx]) > math.pi / 2, dim=1)
+        return out_of_bounds, time_out
+
+    def _reset_idx(self, env_ids: Sequence[int] | None):
+        if env_ids is None:
+            env_ids = self.cartpole._ALL_INDICES
+        DirectRLEnv._reset_idx(self, env_ids)
+
+        joint_pos = self.cartpole.data.default_joint_pos[env_ids]
+        ranges = torch.tensor(self.cfg.initial_pole_angle_ranges, device=joint_pos.device) * math.pi
+        num_ranges = ranges.shape[0]
+        num_envs = joint_pos.shape[0]
+        range_ids = torch.randint(0, num_ranges, (num_envs,), device=joint_pos.device)
+        lower = ranges[range_ids, 0].unsqueeze(-1)
+        upper = ranges[range_ids, 1].unsqueeze(-1)
+        samples = sample_uniform(lower, upper, joint_pos[:, self._pole_dof_idx].shape, joint_pos.device)
+        joint_pos[:, self._pole_dof_idx] += samples
+        joint_vel = self.cartpole.data.default_joint_vel[env_ids]
+
+        default_root_state = self.cartpole.data.default_root_state[env_ids]
+        default_root_state[:, :3] += self.scene.env_origins[env_ids]
+
+        self.joint_pos[env_ids] = joint_pos
+        self.joint_vel[env_ids] = joint_vel
+
+        self.cartpole.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
+        self.cartpole.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
+        self.cartpole.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
+
+
 @torch.jit.script
 def compute_rewards(
     rew_scale_alive: float,
